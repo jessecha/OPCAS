@@ -2,7 +2,7 @@
   File:     FinalArduinoCode.ino
   Author:   Jesse Cha
   Time:     2017/02/01
-  Contact:  e.cha@cranfield.ac.uk
+  Contact:  gotenkscha@gmail.com
   License:  GPL
   About:
 
