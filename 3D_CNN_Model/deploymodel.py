@@ -3,36 +3,17 @@
 from __future__ import division
 from __future__ import absolute_import
 from __future__ import print_function
-import tensorflow as tf
-from tensorflow.python.util import nest
-import numpy as np
-import matplotlib.pyplot as plt
 from random import shuffle
-import glob
-import roslib.message
-import os
-import csv
-import sys
-import math
-import time
 from std_msgs.msg import UInt16
 from sensor_msgs.msg import Joy
-import subprocess
 from optparse import OptionParser
 from datetime import datetime
-import csv
-import math
 from PIL import Image  
-import rospy
-# ROS Image message
 from sensor_msgs.msg import Image as ImageMsg
 from cv_bridge import CvBridge, CvBridgeError
-import numpy as np
-import cv2
-import pickle
-import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
+from sklearn.externals import joblib
 from keras.models import Sequential
 from keras.layers import Flatten, Conv2D, Activation, Dense, Dropout, MaxPooling3D, Conv3D
 from keras import optimizers
@@ -40,24 +21,39 @@ from keras import regularizers
 from keras.layers.normalization import BatchNormalization
 from keras.layers.noise import AlphaDropout
 from keras import callbacks
-from sklearn.externals import joblib
-import argparse
 from keras.backend.tensorflow_backend import set_session
-config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
-config.gpu_options.per_process_gpu_memory_fraction = 0.95 #0.7
-set_session(tf.Session(config=config))
 import matplotlib.pyplot as plt
+import glob
+import roslib.message
+import os
+import csv
+import sys
+import time
+import subprocess
+import csv
+import math
+import rospy
+import numpy as np
+import cv2
+import pickle
+import pandas as pd
+import argparse
+import tensorflow as tf
+from tensorflow.python.client import device_lib
+from tensorflow.python.util import nest
 # Custom Code
 import data_processing_v2
 from model import build_3d_cnn
 from model_test_utils.metrics import mean_absolute_relative_error
 from model_test_utils.metrics import coefficient_of_determination
+
+config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
+config.gpu_options.per_process_gpu_memory_fraction = 0.95 #0.7
+set_session(tf.Session(config=config))
+
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
-import tensorflow as tf
-from tensorflow.python.client import device_lib
 print(device_lib.list_local_devices())
 bridge = CvBridge()
-
 print("start AI!")
 
 def callback(data):
