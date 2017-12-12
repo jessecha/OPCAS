@@ -1,0 +1,79 @@
+from keras.models import Sequential
+from keras.layers import Flatten, Activation, Dense,\
+                         Dropout, MaxPooling3D, Conv3D
+from keras.layers.normalization import BatchNormalization
+from keras.layers.noise import AlphaDropout
+from sklearn.externals import joblib
+import matplotlib.pyplot as plt
+
+
+
+def build_3d_cnn(w, h, d, s):
+    '''
+        w : width
+        h : height
+        d : depth
+        s : n_stacked
+    '''
+    model = Sequential()
+    #First layer
+    
+    # Second layer
+    model.add(Conv3D(
+        filters=16, kernel_size=(3,3,3), strides=(1,3,3),
+        data_format='channels_last', border_mode='same',
+        input_shape=(s, h, w, d))
+    )
+    model.add(Activation('relu'))
+    model.add(MaxPooling3D(
+        pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
+    )
+    # Third layer
+    model.add(Conv3D(
+        filters=32, kernel_size=(3,3,3), strides=(1,1,1),
+        data_format='channels_last', border_mode='same')
+    )
+    model.add(Activation('relu'))
+    model.add(MaxPooling3D(
+        pool_size=(1, 2, 2), strides=(1,2,2), padding='valid', data_format=None)
+    )
+    # Fourth layer
+    model.add(Conv3D(
+        filters=64, kernel_size=(3,3,3), strides=(1,1,1),
+        data_format='channels_last', border_mode='same')
+    )
+    model.add(Activation('relu'))
+    model.add(MaxPooling3D(
+        pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
+    )
+    # Fifth layer
+    model.add(Conv3D(
+        filters=128, kernel_size=(3,3,3), strides=(1,1,1),
+        data_format='channels_last', border_mode='same')
+    )
+    model.add(Activation('relu'))
+    model.add(MaxPooling3D(
+        pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
+    )
+    # Fully connected layer
+    model.add(Flatten())
+
+    model.add(Dense(256))
+    model.add(BatchNormalization())
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+
+    model.add(Dense(256))
+    model.add(BatchNormalization())
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+
+    model.add(Dense(3))
+    model.add(Activation('tanh'))
+
+    model.compile(
+        loss='mean_squared_error', optimizer='adam', metrics=['accuracy']
+    )
+    model.summary()
+    return model
+
