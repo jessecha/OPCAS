@@ -9,6 +9,7 @@ data_preprocessing_v2.py processes the .csv file which contains throttle, steeri
 deploymodel.py deploys the keras model within ROS using the joy catkin package <br />
 model.py contains the actual 3D CNN model implementation <br />
 run_3d_cnn.py creates the 3D CNN model with the .csv file and the image folder <br />
+
   <**Catkin_PKG_Master**/src> <br />
 This folder contains all the ROS catkin packages used by the Host PC (PC that has the Logitech G27 steering wheel). <br />
 bag_converter contains the roslaunch script used to create the image folder and the image .csv file from the recorded rosbag. <br />
