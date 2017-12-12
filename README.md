@@ -1,15 +1,14 @@
   # DNRacing
 This repository is for the scaled V2V autonomous motorsport project involving two 1:8 scale RC cars equipped with Ximea XiQ Cameras on a Nvidia Jetson TX2. The cars are built on top of OFNA DM1-SpecE and Hong Nor X3-GT chassis. Arduino Uno boards send PWM signals to the RC ESCs (Tekin RX8 v.2) and the Jetson TX2s are powered by 120W Goal Zero Sherpa 100 battery packs. The environment for deployment is Linux Ubuntu 16.02.3 LTS and ROS Kinetic Kame. 
 
-Current work involves the use of 3D CNN for an end-to-end behavioral cloning-based racing architecture. 
+Current work involves the use of 3D CNN for an end-to-end behavioral cloning-based racing architecture. <br />
 
-  <Folder: 3D_CNN_Model>
-The end-to-end, behavioral cloning 3D CNN model uses a stack of images with specified jumps. 
-data_preprocessing_v2.py processes the .csv file which contains throttle, steering, brake inputs correlated with the corresponding image.
-deploymodel.py deploys the keras model within ROS using the joy catkin package
-model.py contains the actual 3D CNN model implementation
-run_3d_cnn.py creates the 3D CNN model with the .csv file and the image folder
-
+  <Folder: 3D_CNN_Model> <br />
+The end-to-end, behavioral cloning 3D CNN model uses a stack of images with specified jumps. <br />
+data_preprocessing_v2.py processes the .csv file which contains throttle, steering, brake inputs correlated with the corresponding image. <br />
+deploymodel.py deploys the keras model within ROS using the joy catkin package <br />
+model.py contains the actual 3D CNN model implementation <br />
+run_3d_cnn.py creates the 3D CNN model with the .csv file and the image folder <br />
   <Folders: Catkin_PKG_Master/src>
 This folder contains all the ROS catkin packages used by the Host PC (PC that has the Logitech G27 steering wheel).
 bag_converter contains the roslaunch script used to create the image folder and the image .csv file from the recorded rosbag.
