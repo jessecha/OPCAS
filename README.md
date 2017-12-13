@@ -3,6 +3,32 @@ This repository is for the scaled V2V autonomous motorsport project involving tw
 
 Current work involves the use of 3D CNN for an end-to-end behavioral cloning-based racing architecture. <br />
 
+  <**Hardware**>
+    **Computing Unit**
+    Nvidia Jetson TX2 x2
+    Arduino Uno x2
+    Zotac Zbox EN970 (Discontinued)
+    Nvidia Jetson TX1 (Discontinued)  
+    **Sensors**
+    Ximea XiQ CMOS Camera x2
+    MarvelMind Indoor Positioning System (Discontinued)
+    Hokuyo UST-10LX LIDAR (Discontinued)
+    Razor M0 AHRS Inertial Measurement Unit (Discontinued)
+    ZED Stereo Camera (Discontinued)
+    Occipital Structure IR Sensor (Discontinued)
+    **Chassis**
+    Vehicle #1: OFNA DM1-Spec E
+    Vehicle #2: Hong Nor X3-GT
+    **Drive Train** 
+    Electronic Speed Controller: Tekin RX-8 ver.2 x2
+    Pinion Gear: 11T Steel x2
+    Spur Gear: 48T Steel x2 
+    Motor: TrackStar 2650Kv Brushless Motor x2
+    Tires: HPI Desert Buster 190/60 x8
+    **PowerSupply**
+    GoalZero Sherpa 100 Battery Pack x2
+    5000mAh 11.1v LiPo Battery Pack x2 
+
   <**3D_CNN_Model**> <br />
 The end-to-end, behavioral cloning 3D CNN model uses a stack of images with specified jumps. <br />
 data_preprocessing_v2.py processes the .csv file which contains throttle, steering, brake inputs correlated with the corresponding image. <br />
