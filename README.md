@@ -5,7 +5,7 @@ Current work involves the use of 3D CNN for an end-to-end behavioral cloning-bas
 
   <**Hardware**> <br />
     **Computing Unit** <br />
-    Nvidia Jetson TX2 x2 <br />
+    Nvidia Jetson TX2 Developer Board x2  <br />
     Arduino Uno x2 <br />
     Zotac Zbox EN970 (Discontinued) <br />
     Nvidia Jetson TX1 (Discontinued)  <br /> 
