@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+	<robot name="race_robot">
+		<link name="base_link">
+			<visual>
+				<geometry>
+					<box size="0.546 .335 .01"/>
+				</geometry>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<material name="white">
+					<color rgba="1 1 1 1"/>
+				</material>
+			</visual>
+		</link>
+		<link name="base_laser_box">
+        		<visual>
+        			<geometry>
+        				  <box size="0.05 0.05 0.06"/>
+        			</geometry>
+				<origin rpy="0 0 0" xyz="0.15 0 0.05"/>
+        			<material name="Red">
+					<color rgba="255 0 0 1"/>
+				</material>
+      			</visual>
+                </link>
+      		<link name="zed_camera_box">
+        		<visual>
+        			<geometry>
+        				  <box size="0.03 0.15 0.025"/>
+        			</geometry>
+				<origin rpy="0 0 0" xyz="0.22 0 0.03"/>
+        			<material name="blue">
+					<color rgba="0 0 255 1"/>
+				</material>
+      			</visual>		
+    		</link>
+		<link name="wheel_1">
+			<visual>
+				<geometry>
+					<cylinder length="0.03" radius="0.05"/>
+				</geometry>
+				<origin rpy="1.57 0 0" xyz="0.2 0.17 -0.05"/>
+				<material name="black">
+					<color rgba="0 0 0 1"/>
+				</material>
+			</visual>
+		</link>
+		<link name="wheel_2">
+			<visual>
+				<geometry>
+					<cylinder length="0.03" radius="0.05"/>
+				</geometry>
+				<origin rpy="1.57 0 0" xyz="-0.2 0.17 -0.05"/>
+				<material name="black"/>
+			</visual>
+		</link>
+		<link name="wheel_3">
+			<visual>
+				<geometry>
+					<cylinder length="0.03" radius="0.05"/>	
+				</geometry>
+				<origin rpy="1.57 0 0" xyz="0.2 -0.17 -0.05"/>
+				<material name="black"/>
+			</visual>
+		</link>
+		<link name="wheel_4">
+			<visual>
+				<geometry>
+					<cylinder length="0.03" radius="0.05"/>
+				</geometry>
+				<origin rpy="1.57 0 0" xyz="-0.2 -0.17 -0.05"/>
+				<material name="black"/>
+			</visual>
+		</link>
+		<joint name="base_to_wheel1" type="fixed">
+			<parent link="base_link"/>
+			<child link="wheel_1"/>
+			<origin xyz="0 0 0"/>
+		</joint>
+		<joint name="base_to_wheel2" type="fixed">
+			<parent link="base_link"/>
+			<child link="wheel_2"/>
+			<origin xyz="0 0 0"/>
+		</joint>
+		<joint name="base_to_wheel3" type="fixed">
+			<parent link="base_link"/>
+			<child link="wheel_3"/>
+			<origin xyz="0 0 0"/>
+		</joint>
+		<joint name="base_to_wheel4" type="fixed">
+			<parent link="base_link"/>
+			<child link="wheel_4"/>
+			<origin xyz="0 0 0"/>
+		</joint>
+    <joint name="camera_box" type="fixed">
+      <origin xyz="0 0 0" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="zed_camera_box"/>
+    </joint>	
+    <joint name="laser_box" type="fixed">
+      <origin xyz="0 0 0" rpy="0.0 0.0 0.0"/>
+      <parent link="base_link"/>
+      <child link="base_laser_box"/>
+    </joint>
+</robot>
+
