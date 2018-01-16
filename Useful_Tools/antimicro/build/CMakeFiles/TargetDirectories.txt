@@ -1,0 +1,5 @@
+/home/ubuntu/antimicro-master/build/CMakeFiles/antimicro.dir
+/home/ubuntu/antimicro-master/build/CMakeFiles/antimicro_automoc.dir
+/home/ubuntu/antimicro-master/build/other/CMakeFiles/manpage.dir
+/home/ubuntu/antimicro-master/build/CMakeFiles/uninstall.dir
+/home/ubuntu/antimicro-master/build/share/antimicro/translations/CMakeFiles/updateqm.dir

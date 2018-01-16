@@ -1,0 +1,15 @@
+/usr/local/bin/antimicro
+/usr/local/share/pixmaps/antimicro.png
+/usr/local/share/applications/antimicro.desktop
+/usr/local/share/mime/packages/antimicro.xml
+/usr/local/share/antimicro/translations/antimicro_zh_CN.qm
+/usr/local/share/antimicro/translations/antimicro_ru.qm
+/usr/local/share/antimicro/translations/antimicro_br.qm
+/usr/local/share/antimicro/translations/antimicro_de.qm
+/usr/local/share/antimicro/translations/antimicro_uk.qm
+/usr/local/share/antimicro/translations/antimicro_fr.qm
+/usr/local/share/antimicro/translations/antimicro_ja.qm
+/usr/local/share/antimicro/translations/antimicro_sr.qm
+/usr/local/share/antimicro/translations/antimicro_en.qm
+/usr/local/share/antimicro/translations/antimicro.qm
+/usr/local/share/man/man1/antimicro.1.gz

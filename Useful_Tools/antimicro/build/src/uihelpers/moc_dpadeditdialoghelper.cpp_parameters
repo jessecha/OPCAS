@@ -1,0 +1,6 @@
+-DUSE_SDL_2
+-DWITH_X11
+-DWITH_XTEST
+-o
+/home/ubuntu/antimicro-master/build/src/uihelpers/moc_dpadeditdialoghelper.cpp
+/home/ubuntu/antimicro-master/src/uihelpers/dpadeditdialoghelper.h
