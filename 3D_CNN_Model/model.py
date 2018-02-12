@@ -20,7 +20,7 @@ def build_3d_cnn(w, h, d, s):
     
     # Second layer
     model.add(Conv3D(
-        filters=16, kernel_size=(3,3,3), strides=(1,3,3),
+        filters=16, kernel_size=(5,5,5), strides=(1,3,3),
         data_format='channels_last', border_mode='same',
         input_shape=(s, h, w, d))
     )
@@ -55,20 +55,36 @@ def build_3d_cnn(w, h, d, s):
     model.add(MaxPooling3D(
         pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
     )
+
+    # Sixth layer
+    model.add(Conv3D(
+        filters=256, kernel_size=(3,3,3), strides=(1,1,1),
+        data_format='channels_last', border_mode='same')
+    )
+    model.add(Activation('relu'))
+    model.add(MaxPooling3D(
+        pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
+    )
+
     # Fully connected layer
     model.add(Flatten())
 
-    model.add(Dense(256))
+    model.add(Dense(1024)) #512
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
 
-    model.add(Dense(256))
+    model.add(Dense(128))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
 
-    model.add(Dense(3))
+    model.add(Dense(64))
+    model.add(BatchNormalization())
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+
+    model.add(Dense(2))
     model.add(Activation('tanh'))
 
     model.compile(

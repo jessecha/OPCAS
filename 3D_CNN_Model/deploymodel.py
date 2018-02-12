@@ -62,13 +62,11 @@ def callback(data):
 	reverseposition = UInt16()
 	global steering
 	global throttle
-	global brake
 	aimode = data.axes[1]
 	if aimode > 0:
 		print("AI MODE")
 		print(steering)
 		print(throttle)
-		print(brake)
 		steeringangle = (105 + 150*((steering)))
 		steeringangle = np.uint16(steeringangle)
 		throttleposition = (1485 + 20*(1 + (throttle)))
@@ -80,10 +78,8 @@ def callback(data):
 		if throttle > 1:
 			throttle = 1
 		if throttle < -0.99:
-			#reverseposition = (1500 - 50*(1+(brake))*(1+(brake)))
-			#reverseposition = np.uint16(reverseposition)
 			pub.publish(steeringangle)
-			#pubtwo.publish(reverseposition) 
+
 		if throttle > -0.99:   
 			pub.publish(steeringangle)
 			pubtwo.publish(throttleposition)

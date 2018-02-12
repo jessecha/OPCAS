@@ -8,7 +8,8 @@ import cv2
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
-config.gpu_options.per_process_gpu_memory_fraction = 0.95 #0.7
+#config.gpu_options.per_process_gpu_memory_fraction = 0.95 #0.7
+config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 import pickle
 
@@ -34,7 +35,6 @@ from sklearn.externals import joblib
 import matplotlib.pyplot as plt
 
 # mine
-from data_processing import load_dataset
 import data_processing_v2
 from model import build_3d_cnn
 from model_test_utils.metrics import mean_absolute_relative_error
@@ -57,8 +57,8 @@ def main(*args, **kwargs):
         os.path.dirname(os.path.abspath(os.path.dirname(__file__))),
         'dataset'
     )
-    img_path = os.path.join(data_path, kwargs['img_path'])
-    out_path = os.path.join(data_path, kwargs['out_path'])
+    img_path = os.path.join(kwargs['img_path'])
+    out_path = os.path.join(kwargs['out_path'])
     n_stacked = kwargs['n_stacked']
     # Data load
     train_x, val_x, test_x, train_y, val_y, test_y = data_processing_v2.load_dataset(
@@ -126,8 +126,8 @@ def main(*args, **kwargs):
 
 
     # val result
-    attrs = ['steering', 'throttle', 'brake']
-    for i in range(3):
+    attrs = ['steering', 'throttle']
+    for i in range(2):
         mare = mean_absolute_relative_error(val_y[:,i], model_y_val[:,i])
         print(attrs[i] +' mare: ' + str(mare))
         R2_val = coefficient_of_determination(val_y[:,i], model_y_val[:,i])
@@ -136,16 +136,15 @@ def main(*args, **kwargs):
     csvdata = pd.DataFrame(val_y, columns=attrs)
     csvdata['model_steering'] = model_y_val[:,0]
     csvdata['model_throttle'] = model_y_val[:,1]
-    csvdata['model_brake']    = model_y_val[:,2]
     result_file_name = './result_val_3dcnn_{}stacked_{}jumps_{}depth.csv'.format(
             kwargs['n_stacked'], kwargs['n_jump'], kwargs['depth'])
     csvdata.to_csv(result_file_name)
-    print('val result saved in ')
+    print('val result saved')
 
 
     # test result
-    attrs = ['steering', 'throttle', 'brake']
-    for i in range(3):
+    attrs = ['steering', 'throttle']
+    for i in range(2):
         mare = mean_absolute_relative_error(test_y[:,i], model_y[:,i])
         print(attrs[i] +' mare: ' + str(mare))
         R2_val = coefficient_of_determination(test_y[:,i], model_y[:,i])
@@ -154,11 +153,10 @@ def main(*args, **kwargs):
     csvdata = pd.DataFrame(test_y, columns=attrs)
     csvdata['model_steering'] = model_y[:,0]
     csvdata['model_throttle'] = model_y[:,1]
-    csvdata['model_brake']    = model_y[:,2]
     result_file_name = './result_3dcnn_{}stacked_{}jumps_{}depth.csv'.format(
             kwargs['n_stacked'], kwargs['n_jump'], kwargs['depth'])
     csvdata.to_csv(result_file_name)
-    print('test result saved in ')
+    print('test result saved')
 
 
 if __name__ == '__main__':
@@ -185,7 +183,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
-        type=int, default=1
+        type=int, default=3
     )
     parser.add_argument(
         "--img_path", help="image directory under dataset/",
