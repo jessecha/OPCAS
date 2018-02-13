@@ -1,0 +1,8 @@
+prefix=/home/nvidia/catkin_ws/install
+
+Name: controller
+Description: Description of controller
+Version: 1.11.0
+Cflags: 
+Libs: -L/home/nvidia/catkin_ws/install/lib 
+Requires: roscpp diagnostic_updater sensor_msgs

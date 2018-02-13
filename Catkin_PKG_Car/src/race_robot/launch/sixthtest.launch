@@ -1,0 +1,75 @@
+<launch>
+    <!-- Camera Node -->
+<!--node name="ximea_cam_node" pkg="ximea_cam" type="imagestreamer.py"-->
+    <!--/node-->
+    <!--node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" -->
+    <!--param name="video_device" value="/dev/video0" /-->
+    <!--param name="image_width" value="800" /-->
+    <!--param name="image_height" value="600" /-->
+    <!--param name="pixel_format" value="yuyv" /-->
+    <!--param name="camera_frame_id" value="usb_cam" /-->
+    <!--param name="io_method" value="mmap"/-->
+  <!--/node-->
+  <!--node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen"-->
+    <!--remap from="image" to="/usb_cam/image_raw"/-->
+  <!--/node-->
+  <arg name="config_file_location" default="$(find zed_cpu_ros)/config/SN2725.conf"/>
+<arg name="camera_namespace" default="camera"/>
+
+<node pkg="zed_cpu_ros" type="zed_cpu_ros" name="zed_cpu_ros_node" output="screen" ns="$(arg camera_namespace)" required="true">
+	<param name="resolution" value="3"/>
+	<param name="frame_rate" value="100"/>
+	<param name="config_file_location" value="$(arg config_file_location)"/>
+	<param name="show_image" value="false"/>
+	<param name="left_frame_id" value="left_frame"/>
+	<param name="right_frame_id" value="right_frame"/>
+	<param name="load_zed_config" value="true"/>
+</node>
+    
+    <!--image display -->
+    <node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="/camera/left/image_raw"/>
+    </node>
+
+    <!-- Aruduino --> 
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node_two">
+    <param name="port" value="/dev/ttyACM0"/>
+    <param name="baud" value="115200"/>
+    </node>
+
+    <!-- Teleop -->
+    <node pkg="Racecarteleoptwo" type= "Racecarteleop.py" name="Racecar_teleop_two">
+    </node>
+
+    <!-- SteeringWheel: Throttle & Steering -->
+     <node pkg="controller"
+        type="joy_node_controller"
+        name="joy_node_controller"
+        respawn="false">
+    <param name="deadzone" value="0.001" />
+    <param name="autorepeat rate" value="10.0"/>
+    <param name="coalesce_interval" value="0.1"/>  
+    </node>
+
+    <!-- SteeringWheel: Braking -->
+     <node pkg="controller_two"
+        type="joy_node_controllertwo"
+        name="joy_node_controllertwo"
+        respawn="false">
+    <param name="deadzone" value="0.001" />
+    <param name="autorepeat rate" value="10.0"/>
+    <param name="coalesce_interval" value="0.1"/>  
+    </node>
+
+    <!-- SteeringWheel: Headtracking -->
+     <node pkg="headtracking"
+        type="joy_node_headtracking"
+        name="joy_node_headtracking"
+        respawn="false">
+    <param name="deadzone" value="0.001" />
+    <param name="autorepeat rate" value="1"/>
+    <param name="coalesce_interval" value="0.01"/>  
+    </node>
+
+    
+</launch>
