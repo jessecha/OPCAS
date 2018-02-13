@@ -1,9 +1,0 @@
-serial_no: "34414651"
-cam_name: "cameratwo"
-yaml_url: "package://home/nvidia/catkin_ws/src/ximea-camera/calibrations/cameratwo.yaml"
-allocated_bandwidth: 1.0
-image_height: 1024
-
-image_width: 1280
-image_data_format: "XI_RAW8"
-#camera_frame: "camera_optical"

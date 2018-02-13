@@ -1,0 +1,6 @@
+set(bag_converter_SETUP_PY_VERSION "0.0.0")
+set(bag_converter_SETUP_PY_SCRIPTS "")
+set(bag_converter_SETUP_PY_PACKAGES "bag_converters")
+set(bag_converter_SETUP_PY_PACKAGE_DIRS "include/bag_converters")
+set(bag_converter_SETUP_PY_MODULES "")
+set(bag_converter_SETUP_PY_MODULE_DIRS "")
