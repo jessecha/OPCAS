@@ -168,8 +168,6 @@ def deploy_dataset(stacked_counter):
 
 def main(*args, **kwargs):
 	rospy.init_node('image_to_neural_net')
-	# Define your image topic
-	
 	global pub
 	global pubtwo
 	pub = rospy.Publisher('/Steering', UInt16, queue_size=1)	
@@ -183,7 +181,6 @@ def main(*args, **kwargs):
 	global stacked_counter
 	stacked_counter = 0
 	with tf.device('/gpu:0'):
-		print("starting...")
 		model = build_3d_cnn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
     		saved_file_name = './model.hdf5'
     		model.load_weights(saved_file_name)
