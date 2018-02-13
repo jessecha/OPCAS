@@ -76,6 +76,10 @@ global avgsteering
 avgsteering = 0.760359593594
 global shift
 shift = 1
+global img
+img = []
+global img_stack
+img_stack = []
 def callback_controller(dataone):
 	steeringangle = UInt16() 
 	throttleposition = UInt16()
@@ -121,10 +125,8 @@ def callback_controller_two(datatwo):
 		pubtwo.publish(throttleposition)
 
 def deploy_dataset(stacked_counter):
-	img_stack = []
 	x = []
 	if stacked_counter == 0:
-		img = []
 		for i in range (0, length_of_stacked_images):
 			cv2_img = rospy.wait_for_message(image_topic, ImageMsg)
 			img.append(bridge.imgmsg_to_cv2(cv2_img, "rgb8"))
@@ -141,7 +143,6 @@ def deploy_dataset(stacked_counter):
             		#img[i] = np.expand_dims(img[i], axis=-1)  # 108 x 108 x 1
        		 	img_stack.append(img[i].astype(np.float32))
             	x.append(np.stack(img_stack))
-		print(len(np.stack(x)))
     		return np.stack(x)  # train_x
 	if stacked_counter != 0:
 		for b in range (0, (length_of_stacked_images - length_of_jump)):
@@ -161,9 +162,8 @@ def deploy_dataset(stacked_counter):
         		#img[i] = cv2.bitwise_and(img[i],img[i],mask = mask)
            		#img[i] = cv2.cvtColor(img[i], cv2.COLOR_BGR2GRAY)  # 108 x 108
             		#img[i] = np.expand_dims(img[i], axis=-1)  # 108 x 108 x 1
-       		 	img_stack[length_of_stacked_images - length_of_jump + 1 + i] = img[i].astype(np.float32)
+       		 	img_stack[length_of_stacked_images - length_of_jump + i] = img[i].astype(np.float32)
             	x.append(np.stack(img_stack))
-		print(len(np.stack(x)))
     		return np.stack(x)  # train_x
 
 def main(*args, **kwargs):
@@ -184,16 +184,16 @@ def main(*args, **kwargs):
 	stacked_counter = 0
 	with tf.device('/gpu:0'):
 		print("starting...")
+		model = build_3d_cnn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
+    		saved_file_name = './model.hdf5'
+    		model.load_weights(saved_file_name)
 		while True: 
 			global steering
 			global throttle
 			global brake
     			deploy_x = deploy_dataset(stacked_counter)
 			stacked_counter = stacked_counter + 1
-    			model = build_3d_cnn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
-    			saved_file_name = './model.hdf5'
-    			model.load_weights(saved_file_name)
-   			model_y = model.predict(deploy_x, batch_size=1, verbose=1)
+   			model_y = model.predict(deploy_x, batch_size=1, verbose=0)
     			attrs = ['steering', 'throttle'] 
     			steering = float(model_y[0][0])
     			throttle = float(model_y[0][1])
