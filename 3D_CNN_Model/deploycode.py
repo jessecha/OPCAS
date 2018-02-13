@@ -42,10 +42,10 @@ import tensorflow as tf
 from tensorflow.python.client import device_lib
 from tensorflow.python.util import nest
 # Custom Code
-import data_processing_v2
+#import data_processing_v2
 from model import build_3d_cnn
-from model_test_utils.metrics import mean_absolute_relative_error
-from model_test_utils.metrics import coefficient_of_determination
+#from model_test_utils.metrics import mean_absolute_relative_error
+#from model_test_utils.metrics import coefficient_of_determination
 
 config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
 #config.gpu_options.per_process_gpu_memory_fraction = 0.95 
@@ -61,10 +61,21 @@ length_of_stacked_images = 25
 global length_of_jump
 length_of_jump = 5
 global width_of_downsize
-width_of_downsize = 200
+width_of_downsize = 150
 global height_of_downsize
 height_of_downsize =150
-
+global image_topic
+image_topic = "/camera/left/image_raw"
+global stddevthrottle
+stddevthrottle = 0.0412072677
+global stddevsteering
+stddevsteering = 0.039548534475
+global avgthrottle
+avgthrottle = 1.46161837245
+global avgsteering
+avgsteering = 0.760359593594
+global shift
+shift = 1
 def callback_controller(dataone):
 	steeringangle = UInt16() 
 	throttleposition = UInt16()
@@ -74,6 +85,7 @@ def callback_controller(dataone):
 	global brake
 	aimode = data.axes[1]
 	if aimode > 0:
+		steering = steering*stddevsteering + avgsteering - shift
 		print(steering)
 		steeringangle = (103 + 180*((steering) + 0.25))
 		steeringangle = np.uint16(steeringangle)
@@ -98,6 +110,7 @@ def callback_controller_two(datatwo):
 	global brake
 	aimode = data.axes[1]
 	if aimode > 0:
+		throttle = throttle*stddevthrottle + avgthrottle - shift
 		print(throttle)
 		throttleposition = (1489 + 100*(throttle))
 		throttleposition = np.uint16(throttleposition)
@@ -111,11 +124,11 @@ def deploy_dataset(stacked_counter):
 	img_stack = []
 	x = []
 	if stacked_counter == 0:
-		img = [][]
+		img = []
 		for i in range (0, length_of_stacked_images):
 			cv2_img = rospy.wait_for_message(image_topic, ImageMsg)
-			img[i] = bridge.imgmsg_to_cv2(cv2_img, "rgb8")
-        		img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
+			img.append(bridge.imgmsg_to_cv2(cv2_img, "rgb8"))
+        		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
         		img[i] = img[i][130:376, :]
         		img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
 			#img = cv2.cvtColor(img[i],cv2.COLOR_BGR2HSV)
@@ -128,6 +141,7 @@ def deploy_dataset(stacked_counter):
             		#img[i] = np.expand_dims(img[i], axis=-1)  # 108 x 108 x 1
        		 	img_stack.append(img[i].astype(np.float32))
             	x.append(np.stack(img_stack))
+		print(len(np.stack(x)))
     		return np.stack(x)  # train_x
 	if stacked_counter != 0:
 		for b in range (0, (length_of_stacked_images - length_of_jump)):
@@ -136,7 +150,7 @@ def deploy_dataset(stacked_counter):
 		for i in range (0, length_of_jump):
 			cv2_img = rospy.wait_for_message(image_topic, ImageMsg)
 			img[i] = bridge.imgmsg_to_cv2(cv2_img, "rgb8")
-        		img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
+        		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
         		img[i] = img[i][130:376, :]
 			img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
 			#img = cv2.cvtColor(img[i],cv2.COLOR_BGR2HSV)
@@ -149,12 +163,13 @@ def deploy_dataset(stacked_counter):
             		#img[i] = np.expand_dims(img[i], axis=-1)  # 108 x 108 x 1
        		 	img_stack[length_of_stacked_images - length_of_jump + 1 + i] = img[i].astype(np.float32)
             	x.append(np.stack(img_stack))
+		print(len(np.stack(x)))
     		return np.stack(x)  # train_x
 
 def main(*args, **kwargs):
 	rospy.init_node('image_to_neural_net')
 	# Define your image topic
-	image_topic = "/zed_camera/right_image/image_raw"
+	
 	global pub
 	global pubtwo
 	pub = rospy.Publisher('/Steering', UInt16, queue_size=1)	
@@ -168,6 +183,7 @@ def main(*args, **kwargs):
 	global stacked_counter
 	stacked_counter = 0
 	with tf.device('/gpu:0'):
+		print("starting...")
 		while True: 
 			global steering
 			global throttle
@@ -175,7 +191,7 @@ def main(*args, **kwargs):
     			deploy_x = deploy_dataset(stacked_counter)
 			stacked_counter = stacked_counter + 1
     			model = build_3d_cnn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
-    			saved_file_name = './keras_cnn.hdf5'
+    			saved_file_name = './model.hdf5'
     			model.load_weights(saved_file_name)
    			model_y = model.predict(deploy_x, batch_size=1, verbose=1)
     			attrs = ['steering', 'throttle'] 

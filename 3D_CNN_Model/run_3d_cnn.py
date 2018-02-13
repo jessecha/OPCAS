@@ -87,14 +87,14 @@ def main(*args, **kwargs):
             stop_callbacks = callbacks.EarlyStopping(
                 monitor='val_loss', patience=30, verbose=0, mode='min', min_delta=0
             )
-            chekpoint = callbacks.ModelCheckpoint(
+            checkpoint = callbacks.ModelCheckpoint(
                 saved_file_name, monitor='val_loss',
                 verbose=1, save_best_only=True, mode='min'
             )
             history = model.fit(
                 train_x, train_y,
                 batch_size=kwargs['batch_size'], epochs=kwargs['epochs'],
-                callbacks=[stop_callbacks,chekpoint],
+                callbacks=[stop_callbacks,checkpoint],
                 validation_data=(val_x, val_y), shuffle=True
             )
         # test always
@@ -114,6 +114,7 @@ def main(*args, **kwargs):
         plt.xlabel('epoch')
         plt.legend(['train', 'val'], loc='upper left')
         plt.show()
+        
         # summarize history for loss
         plt.plot(history.history['loss'])
         plt.plot(history.history['val_loss'])
@@ -122,6 +123,7 @@ def main(*args, **kwargs):
         plt.xlabel('epoch')
         plt.legend(['train', 'val'], loc='upper left')
         plt.show()
+        
 
 
 
@@ -132,7 +134,6 @@ def main(*args, **kwargs):
         print(attrs[i] +' mare: ' + str(mare))
         R2_val = coefficient_of_determination(val_y[:,i], model_y_val[:,i])
         print(attrs[i] +'R^2: ' + str(R2_val))
-
     csvdata = pd.DataFrame(val_y, columns=attrs)
     csvdata['model_steering'] = model_y_val[:,0]
     csvdata['model_throttle'] = model_y_val[:,1]
@@ -149,7 +150,7 @@ def main(*args, **kwargs):
         print(attrs[i] +' mare: ' + str(mare))
         R2_val = coefficient_of_determination(test_y[:,i], model_y[:,i])
         print(attrs[i] +'R^2: ' + str(R2_val))
-
+        print("maximum test accuracy was " + str(max(test_y[:,i])))
     csvdata = pd.DataFrame(test_y, columns=attrs)
     csvdata['model_steering'] = model_y[:,0]
     csvdata['model_throttle'] = model_y[:,1]
