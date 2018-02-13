@@ -1,2 +1,0 @@
-Racecarteleop:bag_converter:controller:controller_two:drive_ros_msgs:headtracking:race_robot:razor_imu_9dof:rosbag_to_csv:rosserial/rosserial_python:usb_cam:ximea_cam:zed_cpu_ros
--DCATKIN_DEVEL_PREFIX=/home/nvidia/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/nvidia/catkin_ws/install -G Unix Makefiles

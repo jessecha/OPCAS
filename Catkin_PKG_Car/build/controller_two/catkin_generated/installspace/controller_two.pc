@@ -1,8 +1,0 @@
-prefix=/home/nvidia/catkin_ws/install
-
-Name: controller_two
-Description: Description of controller_two
-Version: 1.11.0
-Cflags: 
-Libs: -L/home/nvidia/catkin_ws/install/lib 
-Requires: roscpp diagnostic_updater sensor_msgs

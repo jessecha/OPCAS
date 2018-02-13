@@ -1,8 +1,0 @@
-prefix=/home/nvidia/catkin_ws/install
-
-Name: race_robot
-Description: Description of race_robot
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/nvidia/catkin_ws/install/lib 
-Requires: 

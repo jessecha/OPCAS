@@ -1,8 +1,0 @@
-prefix=/home/nvidia/catkin_ws/devel
-
-Name: headtracking
-Description: Description of headtracking
-Version: 1.11.0
-Cflags: 
-Libs: -L/home/nvidia/catkin_ws/devel/lib 
-Requires: roscpp diagnostic_updater sensor_msgs
