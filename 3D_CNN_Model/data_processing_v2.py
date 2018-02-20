@@ -34,7 +34,7 @@ def load_x_dataset(n_stacked, path, n_jump=None, h=108, w=108, d=1):
     print("image processing (resizing, cropping)")
     for i, fname in tqdm(enumerate(fnames), total=len(fnames), leave=False):
         img = cv2.imread(os.path.join(path, fname))  # 
-        img = img[130:376, :]
+        img = img[:, :]
         img = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)  # 108 x 108 x 3
         #img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
         #lower_green = np.array([50,100,50])
@@ -73,7 +73,7 @@ def load_y_dataset(n_stacked, path, n_jump=None):
 
 
 
-def load_dataset(n_stacked,  img_path, out_path, h=108, w=108, d=1,
+def load_dataset(n_stacked,  img_path, out_path, h=150, w=150, d=3,
                  val_size=None, test_size=None, n_jump=None):
     assert test_size is None or (test_size >= 0.0 and test_size <= 1.0)
     assert val_size is None or (val_size >= 0.0 and val_size <= 1.0)

@@ -21,14 +21,15 @@ def cameraone():
     #start communication to open specific device, use:
     #(open by serial number)
     print('Opening camera...')
+    #cam.set_debug_level("XI_DL_TRACE")
     cam.open_device() 
     #settings
     cam.set_downsampling_type('XI_SKIPPING')
     cam.set_downsampling("XI_DWN_2x2")
-    cam.set_exposure(int(10000))
-    cam.set_gain(float(10))
+    cam.set_exposure(int(20000))
+    cam.set_gain(float(5))
     #cam.set_acq_timing_mode("XI_ACQ_TIMING_MODE_FREE_RUN")
-    cam.set_limit_bandwidth(2000)
+    cam.set_limit_bandwidth(2500)
     #cam.set_buffers_queue_size(10)
     print('Camera exposure was set to %i us' %cam.get_exposure())
     cam.set_imgdataformat('XI_RGB24')

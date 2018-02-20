@@ -151,7 +151,7 @@ class ImageCreator():
 		            image_name = str("time@" + timestr[11:23])+'.png'
                             os.chdir(pathtwo)
                             cv2.imwrite(os.path.join(os.path.expanduser('~'),'Desktop','imagefiles','image', image_name), cv_image)
-                            with open('cameratwoimages.csv', 'a') as csvfile:
+                            with open('cameraimages.csv', 'a') as csvfile:
     				fieldnames = ['time', '.header.stamp.secs', '.header.stamp.nsecs',  'file_location', 'position']     
     			        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                                 if str(ntwo) == "1":

@@ -14,27 +14,21 @@ from sensor_msgs.msg import Joy
 
 def callback_controller(dataone):
         steeringangle = UInt16()
-	steeringangle = 103 + 180*(dataone.axes[1] + 0.250)
+	steeringangle = 103 + 100*(dataone.axes[0] + 0.250)
 	steeringangle = numpy.uint16(steeringangle)
-        #66
 	if steeringangle < 83:
 		steeringangle = 83
 	if steeringangle > 123:
 		steeringangle = 123
         pub_steering.publish(steeringangle)
-
-def callback_controller_two(datatwo):
-        brakeposition = UInt16()
         throttleposition = UInt16()
-	brakeposition = 1489 - 100*(datatwo.axes[1])
-	brakeposition = numpy.uint16(brakeposition)
-	throttleposition = 1489 + 200*(datatwo.axes[0])
+	throttleposition = 1489 + 150*(dataone.axes[1])
+	if throttleposition > 1505:
+		throttleposition = 1505	
 	throttleposition = numpy.uint16(throttleposition) 
-	pub_braking.publish(brakeposition)
-        if int(brakeposition) > 1487:
-        	pub_throttle.publish(throttleposition) 
-	if int(brakeposition) < 1487: 
-        	pub_throttle.publish(brakeposition)
+        pub_throttle.publish(throttleposition) 
+	
+
 def callback_headtracking(datathree):
         tilt_angle = UInt16()
         pan_angle = UInt16()
@@ -60,7 +54,6 @@ def start():
 	pub_pan = rospy.Publisher('/Set_Pan', UInt16, queue_size=1)
         # subscribed to joystick inputs on topic "joy"
 	rospy.Subscriber("controller", Joy, callback_controller)
-	rospy.Subscriber("controller_two", Joy, callback_controller_two)
 	rospy.Subscriber("headtracking", Joy, callback_headtracking)
 	rospy.spin()
 

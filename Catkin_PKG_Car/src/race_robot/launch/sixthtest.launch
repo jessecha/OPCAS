@@ -1,7 +1,7 @@
 <launch>
     <!-- Camera Node -->
-<!--node name="ximea_cam_node" pkg="ximea_cam" type="imagestreamer.py"-->
-    <!--/node-->
+<node name="ximea_cam_node" pkg="ximea_cam" type="imagestreamer.py">
+    </node>
     <!--node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" -->
     <!--param name="video_device" value="/dev/video0" /-->
     <!--param name="image_width" value="800" /-->
@@ -13,11 +13,12 @@
   <!--node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen"-->
     <!--remap from="image" to="/usb_cam/image_raw"/-->
   <!--/node-->
+
   <arg name="config_file_location" default="$(find zed_cpu_ros)/config/SN2725.conf"/>
 <arg name="camera_namespace" default="camera"/>
 
 <node pkg="zed_cpu_ros" type="zed_cpu_ros" name="zed_cpu_ros_node" output="screen" ns="$(arg camera_namespace)" required="true">
-	<param name="resolution" value="3"/>
+	<param name="resolution" value="1"/>
 	<param name="frame_rate" value="100"/>
 	<param name="config_file_location" value="$(arg config_file_location)"/>
 	<param name="show_image" value="false"/>
@@ -28,7 +29,8 @@
     
     <!--image display -->
     <node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
-    <remap from="image" to="/camera/left/image_raw"/>
+    <remap from="image" to="/image_topic"/>
+    <param name = "autosize" value="false"/>	
     </node>
 
     <!-- Aruduino --> 

@@ -34,9 +34,14 @@ global timestamptwo
 timestamptwo = []
 global timestampthree 
 timestampthree = []
-
+global startnumber
+startnumber = 261
+global finishnumber
+finishnumber = 13061
+global timestamprate 
+timestamprate = 0.025
 print("Starting joy data extraction...")
-with open('joytwo.csv') as csvfilesix:
+with open('controllertwo.csv') as csvfilesix:
 	reader = csv.DictReader(csvfilesix)
 	nsecs = []
 	secs = []
@@ -96,9 +101,7 @@ with open('joytwo.csv') as csvfilesix:
 		realtime.append(float(hour[a])*60*60 + float(minute[a])*60 + float(second[a]) + 0.001*float(nanosecond[a])) 
 		timestamp.append(realtime[a])
         print(len(time))
-	startnumber = 1
 	clock = startnumber
-	finishnumber = 46850 #235835 #135000
 	universal_start_time = timestamp[startnumber] 
 	before_dec, after_dec = str(universal_start_time).split('.')
 	universal_start_time = float('.'.join((before_dec, after_dec[0:2])))
@@ -113,20 +116,20 @@ with open('joytwo.csv') as csvfilesix:
 			throttle_split = throttle[g].strip().split(',')
 			servo_split = servo[g].strip().split(',')
 			brake_split = brake[g].strip().split(',')
-			throttle[g] = throttle_split[3][1:]
+			throttle[g] = throttle_split[1][1:]
                         print(throttle[g]) 
 			servo[g] = servo_split[0][1:]
                         print(servo[g])
 			#brake[g] = brake_split[4]
-	total_time = int(math.floor((universal_finish_time - universal_start_time)/0.01))
+	total_time = int(math.floor((universal_finish_time - universal_start_time)/timestamprate))
 	
 
 
 	for d in range(total_time):
-		timetable.append(timestamp[clock] + 0.01*count)
-		h = str(int((timestamp[clock] + 0.01*count)/3600))
-		m = str(int((((timestamp[clock] + 0.01*count)/3600 - int((timestamp[clock] + 0.01*count)/3600)) * 3600)/60))           
-		s = timestamp[clock] + 0.01*count - int(h)*3600 - int(m)*60
+		timetable.append(timestamp[clock] + timestamprate*count)
+		h = str(int((timestamp[clock] + timestamprate*count)/3600))
+		m = str(int((((timestamp[clock] + timestamprate*count)/3600 - int((timestamp[clock] + 0.01*count)/3600)) * 3600)/60))           
+		s = timestamp[clock] + timestamprate*count - int(h)*3600 - int(m)*60
 		before_dec, after_dec = str(s).split('.')
 		s = str(float('.'.join((before_dec, after_dec[0:2]))))
 		displaytime.append(h + ":" + m + ":" + s)
@@ -137,7 +140,7 @@ with open('joytwo.csv') as csvfilesix:
         print("starting nested for loops...")
 	for c in range(len(timestamp)):
 		for y in range(total_time):	
-			if (((timetable[y] + 0.01) > timestamp[c]) and (timetable[y] < timestamp[c])):
+			if (((timetable[y] + timestamprate) > timestamp[c]) and (timetable[y] < timestamp[c])):
 			        throttle_position[y] = float(str((float(throttle[c])))[:7])
 			        #brake_position[y] = float(str((float(brake[c])))[:7])
 			        if (float(servo[c]) < 0.00 and float(servo[c]) > -1.5):
@@ -164,7 +167,7 @@ with open('joytwo.csv') as csvfilesix:
 			throttle_position[e] = float(throttle_position[e])
              
 print("Starting camera image extraction...")
-with open('cameratwoimages.csv') as csvfilethree:
+with open('cameraimagestwo.csv') as csvfilethree:
 	readercamera = csv.DictReader(csvfilethree)
 	nsecs = []
 	secs = []
@@ -213,15 +216,18 @@ with open('cameratwoimages.csv') as csvfilethree:
 
 	for c in range(len(timestamptwo)):
 		for y in range(len(timetable)):	 
-			if (((timetable[y] + 0.01) > timestamptwo[c]) and (timetable[y] < timestamptwo[c])):
+			if (((timetable[y] + timestamprate) > timestamptwo[c]) and (timetable[y] < timestamptwo[c])):
 				camera_image[y] = filelocationcamera[c] 
 	
 	for e in range(total_time):
 		if camera_image[e] == "empty":
-			camera_image[e] = camera_image[e-1] 
+			a = 1;
+			while camera_image[e+a] == "empty":
+				a = a + 1;
+			camera_image[e] = camera_image[e+a] 
 
 print("Filing finished. Plotting...")
-print("Close plot after inspection to continue...")
+print("Closing plot after inspection to continue...")
 
 
 # print a histogram to see which steering angle ranges are most overrepresented
@@ -232,7 +238,9 @@ width = 0.7 * (bins[1] - bins[0])
 center = (bins[:-1] + bins[1:]) / 2
 plt.bar(center, hist, align='center', width=width)
 plt.plot((np.min(servo_position), np.max(servo_position)), (avg_samples_per_bin, avg_samples_per_bin), 'k-')
-plt.show()
+plt.show(block=False)
+plt.pause(3)
+plt.close()
 
 # determine keep probability for each bin: if below avg_samples_per_bin, keep all; otherwise keep prob is proportional
 # to number of samples above the average, so as to bring the number of samples for that bin down to the average
@@ -257,7 +265,7 @@ for i in range(len(servo_position)):
 #throttle_position = np.delete(throttle_position, remove_list)
 print("You just saw the original servo distribution. Now time for the feature scaled, mean normalized version...")
 
-#FeatureScaling and MeanNormalization
+#Shift by 5 and standardize
 averageofsteering = 0;
 averageofthrottle = 0;
 #averageofbrake = 0;
@@ -265,8 +273,8 @@ servo_position_n = [];
 throttle_position_n = [];
 #brake_position_n = [];
 for z in range(len(servo_position)):
-	servo_position_n.append(servo_position[z])
-	throttle_position_n.append(throttle_position[z])
+	servo_position_n.append(servo_position[z]+5)
+	throttle_position_n.append(throttle_position[z]+5)
 	#brake_position_n.append(brake_position[z])
 	averageofsteering = averageofsteering + servo_position_n[z]
 	averageofthrottle = averageofthrottle + throttle_position_n[z]
@@ -296,26 +304,30 @@ width = 0.7 * (bins[1] - bins[0])
 center = (bins[:-1] + bins[1:]) / 2
 plt.bar(center, hist, align='center', width=width)
 plt.plot((np.min(servo_position_n), np.max(servo_position_n)), (avg_samples_per_bin, avg_samples_per_bin), 'k-')
-plt.show()
+plt.show(block=False)
+plt.pause(3)
+plt.close()
 print("Saving the set...")
-
+print("Steering/Throttle data length is " + str(len(throttle_position)))
+print("image data length is " + str(len(camera_image)))
 # Save trainingset
-lengthofdata = int(len(throttle_position)) - 10
+lengthofdata = int(len(throttle_position)) 
 
-with open('trainingset.csv', 'w') as csvfiletrain:
+with open('trainingset.csv', 'w+') as csvfiletrain:
 	fieldnames = ['steering', 'throttle', 'N_steering', 'N_throttle', 'image_number']
 	writer = csv.DictWriter(csvfiletrain, fieldnames=fieldnames)
-	writer.writeheader()
-	imgcount = 1;
+	#writer.writeheader()
+	imgcount = 25184 #1;
 	for a in range(int(lengthofdata*1.0)):
-		writer.writerow({'steering': servo_position[a], 'throttle': throttle_position[a], 'N_steering': servo_position_n[a], 'N_throttle': throttle_position_n[a], 'image_number': imgcount})
+		writer.writerow({'steering': servo_position_n[a], 'throttle': throttle_position_n[a], 'N_steering': servo_position_n[a], 'N_throttle': throttle_position_n[a], 'image_number': imgcount})
 		path = "/home/nvidia/Desktop/imagefiles/jpgimage"
 		originalpath = "/home/nvidia/Desktop/imagefiles/image"
 		mylist = os.listdir(originalpath);
+
 		for d in range(len(mylist)):	
-		  	if camera_image[a][37:58] == mylist[d]:
+		  	if camera_image[a][38:59] == mylist[d]:
 				print("Converting..." + str(a) + ' out of ' + str(lengthofdata))		
-				im = Image.open(camera_image[a][:58])
+				im = Image.open(camera_image[a][:59])
 				rgb_im = im.convert('RGB')
 				rgb_im.save(path + '/' + str(imgcount) + '.jpg')
 				imgcount = imgcount + 1;				 
