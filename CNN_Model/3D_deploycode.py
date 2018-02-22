@@ -58,7 +58,7 @@ print(device_lib.list_local_devices())
 bridge = CvBridge()
 print("start AI!")
 global length_of_stacked_images
-length_of_stacked_images = 15
+length_of_stacked_images = 25
 global length_of_jump
 length_of_jump = 5
 global width_of_downsize
@@ -92,10 +92,10 @@ def deploy_dataset(stacked_counter):
 	x = []
 	if stacked_counter == 0:
 		for i in range (0, length_of_stacked_images):
-			cv2_img = rospy.wait_for_message(image_topic, ImageMsg)
+			cv2_img = rospy.wait_for_message(image_topic, ImageMsg, timeout = None)
 			img.append(bridge.imgmsg_to_cv2(cv2_img, "rgb8"))
         		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
-        		img[i] = img[i][:, :]
+        		img[i] = img[i][220:, 60:580]
         		img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
 			#img = cv2.cvtColor(img[i],cv2.COLOR_BGR2HSV)
         		#lower_green = np.array([50,100,50])
@@ -144,7 +144,7 @@ def main(*args, **kwargs):
 	global AISTATUS
 	with tf.device('/gpu:0'):
 		model = build_3d_cnn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
-    		saved_file_name = './gongju_15_5.hdf5'
+    		saved_file_name = './3dcnn25.hdf5'
     		model.load_weights(saved_file_name)
 		while True: 
 			# subscribed to joystick inputs on topic "joy"
@@ -163,7 +163,7 @@ def main(*args, **kwargs):
 				#throttleposition = (1489 + 100*(throttle))
 				throttleposition = 1510
 				#steering = steering*stddevsteering + avgsteering - shift
-				steeringangle = (103 + 100*((steering) + 0.25) +5)
+				steeringangle = (103 + 100*((steering) + 0.25))
 				if steeringangle < 83:
 					steeringangle = 83
 				if steeringangle >127:

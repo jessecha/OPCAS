@@ -44,7 +44,7 @@ from tensorflow.python.client import device_lib
 from tensorflow.python.util import nest
 # Custom Code
 #import data_processing_v2
-from model import build_3d_cnn
+from model import build_cnn
 #from model_test_utils.metrics import mean_absolute_relative_error
 #from model_test_utils.metrics import coefficient_of_determination
 
@@ -62,7 +62,7 @@ length_of_stacked_images = 1
 global length_of_jump
 length_of_jump = 1
 global width_of_downsize
-width_of_downsize = 150
+width_of_downsize = 200
 global height_of_downsize
 height_of_downsize =150
 global image_topic
@@ -78,7 +78,6 @@ avgsteering = 0.760359593594
 global shift
 shift = 1
 global img
-img = []
 global img_stack
 img_stack = []
 global aimode
@@ -90,13 +89,12 @@ global steeringangle
 
 def deploy_dataset(stacked_counter):
 	x = []
-	if stacked_counter == 0:
-		for i in range (0, length_of_stacked_images):
-			cv2_img = rospy.wait_for_message(image_topic, ImageMsg)
-			img.append(bridge.imgmsg_to_cv2(cv2_img, "rgb8"))
+	img_stack = []
+	cv2_img = rospy.wait_for_message(image_topic, ImageMsg, timeout=None)
+	img = (bridge.imgmsg_to_cv2(cv2_img, "rgb8"))
         		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
-        		img[i] = img[i][:, :]
-        		img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
+        img = img[220:, 60:580]
+        img = cv2.resize(img, (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
 			#img = cv2.cvtColor(img[i],cv2.COLOR_BGR2HSV)
         		#lower_green = np.array([50,100,50])
         		#upper_green = np.array([75,255,230])
@@ -105,9 +103,9 @@ def deploy_dataset(stacked_counter):
         		#img[i] = cv2.bitwise_and(img[i],img[i],mask = mask)
            		#img[i] = cv2.cvtColor(img[i], cv2.COLOR_BGR2GRAY)  # 108 x 108
             		#img[i] = np.expand_dims(img[i], axis=-1)  # 108 x 108 x 1
-       		 	img_stack.append(img[i].astype(np.float32))
-            	x.append(np.stack(img_stack))
-    		return np.stack(x)  # train_x
+       	img_stack.append(img.astype(np.float32))
+        x.append(np.stack(img_stack))
+        return np.stack(x)  # train_x
 	#if stacked_counter != 0:
 		#for b in range (0, (length_of_stacked_images - length_of_jump)):
 		#	img[b] = img[b+length_of_jump]
@@ -143,8 +141,8 @@ def main(*args, **kwargs):
 	stacked_counter = 0
 	global AISTATUS
 	with tf.device('/gpu:0'):
-		model = build_3d_cnn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
-    		saved_file_name = './gongju_15_5.hdf5'
+		model = build_cnn(width_of_downsize, height_of_downsize, 3)
+    		saved_file_name = './2dcnn.hdf5'
     		model.load_weights(saved_file_name)
 		while True: 
 			# subscribed to joystick inputs on topic "joy"
@@ -153,7 +151,7 @@ def main(*args, **kwargs):
 			if AISTATUS.axes[1] < 0.4:
 				deploy_x = deploy_dataset(stacked_counter)
 				#stacked_counter = stacked_counter + 1
-   				model_y = model.predict(deploy_x, batch_size=1, verbose=0)
+   				model_y = model.predict(np.squeeze(deploy_x, axis =1), batch_size=1, verbose=0)
     				attrs = ['steering', 'throttle'] 
     				steering = float(model_y[0][0])
     				throttle = float(model_y[0][1])
@@ -161,9 +159,9 @@ def main(*args, **kwargs):
 				pubtwo = rospy.Publisher('/Throttle', UInt16, queue_size=1)
 				#throttle = throttle*stddevthrottle + avgthrottle - shift
 				#throttleposition = (1489 + 100*(throttle))
-				throttleposition = 1510
+				throttleposition = 1498
 				#steering = steering*stddevsteering + avgsteering - shift
-				steeringangle = (103 + 100*((steering) + 0.25) +5)
+				steeringangle = (103 + 100*((steering) + 0.25))
 				if steeringangle < 83:
 					steeringangle = 83
 				if steeringangle >127:
@@ -207,11 +205,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=160
+        type=int, default=200
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=160
+        type=int, default=150
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",

@@ -22,9 +22,9 @@ def callback_controller(dataone):
 		steeringangle = 123
         pub_steering.publish(steeringangle)
         throttleposition = UInt16()
-	throttleposition = 1489 + 150*(dataone.axes[1])
-	if throttleposition > 1505:
-		throttleposition = 1505	
+	throttleposition = 1489 + 70*(dataone.axes[1])
+	#if throttleposition > 1495:
+	#	throttleposition = 1495	
 	throttleposition = numpy.uint16(throttleposition) 
         pub_throttle.publish(throttleposition) 
 	
