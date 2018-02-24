@@ -59,7 +59,7 @@ def build_3d_cnn(w, h, d, s):
         data_format='channels_last', border_mode='same',
         input_shape=(s, h, w, d))
     )
-    model.add(Activation('relu'))
+    model.add(Activation('ELU'))
     model.add(MaxPooling3D(
         pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
     )
@@ -68,7 +68,7 @@ def build_3d_cnn(w, h, d, s):
         filters=32, kernel_size=(3,3,3), strides=(1,1,1),
         data_format='channels_last', border_mode='same')
     )
-    model.add(Activation('relu'))
+    model.add(Activation('ELU'))
     model.add(MaxPooling3D(
         pool_size=(1, 2, 2), strides=(1,2,2), padding='valid', data_format=None)
     )
@@ -77,7 +77,7 @@ def build_3d_cnn(w, h, d, s):
         filters=64, kernel_size=(3,3,3), strides=(1,1,1),
         data_format='channels_last', border_mode='same')
     )
-    model.add(Activation('relu'))
+    model.add(Activation('ELU'))
     model.add(MaxPooling3D(
         pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
     )
@@ -86,7 +86,7 @@ def build_3d_cnn(w, h, d, s):
         filters=128, kernel_size=(3,3,3), strides=(1,1,1),
         data_format='channels_last', border_mode='same')
     )
-    model.add(Activation('relu'))
+    model.add(Activation('ELU'))
     model.add(MaxPooling3D(
         pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
     )
@@ -96,7 +96,7 @@ def build_3d_cnn(w, h, d, s):
         filters=256, kernel_size=(3,3,3), strides=(1,1,1),
         data_format='channels_last', border_mode='same')
     )
-    model.add(Activation('relu'))
+    model.add(Activation('ELU'))
     model.add(MaxPooling3D(
         pool_size=(1,2,2), strides=(1,2,2), padding='valid', data_format=None)
     )
@@ -106,17 +106,17 @@ def build_3d_cnn(w, h, d, s):
 
     model.add(Dense(1024)) #512
     model.add(BatchNormalization())
-    model.add(Activation('relu'))
+    model.add(Activation('ELU'))
     model.add(Dropout(0.5))
 
     model.add(Dense(128))
     model.add(BatchNormalization())
-    model.add(Activation('relu'))
+    model.add(Activation('ELU'))
     model.add(Dropout(0.5))
 
     model.add(Dense(64))
     model.add(BatchNormalization())
-    model.add(Activation('relu'))
+    model.add(Activation('ELU'))
     model.add(Dropout(0.5))
 
     model.add(Dense(2))

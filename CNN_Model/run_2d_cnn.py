@@ -37,26 +37,29 @@ from model_test_utils.metrics import coefficient_of_determination
 # session = tf.Session(config=config)
 
 
-def build_cnn(w=150, h=150, d=3):
+def build_cnn(w=200, h=150, d=3):
     model = Sequential()
-    model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="same"))
+    model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
+    model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="same", W_regularizer=l2(0.001)))
     model.add(ELU())
-    model.add(Convolution2D(36, 5, 5, subsample=(2, 2), border_mode="same"))
+    model.add(Convolution2D(36, 5, 5, subsample=(2, 2), border_mode="same", W_regularizer=l2(0.001)))
     model.add(ELU())
-    model.add(Convolution2D(48, 3, 3, subsample=(2, 2), border_mode="same"))
+    model.add(Convolution2D(48, 3, 3, subsample=(2, 2), border_mode="same", W_regularizer=l2(0.001)))
     model.add(ELU())
-    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode="same"))
+    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode="same", W_regularizer=l2(0.001)))
+    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode='same', W_regularizer=l2(0.001)))
+    model.add(ELU())
     model.add(Flatten())
     model.add(Dropout(.2))
     model.add(ELU())
-    model.add(Dense(512))
+    model.add(Dense(512), W_regularizer=l2(0.001))
     model.add(Dropout(.5))
     model.add(ELU())
-    model.add(Dense(256))
+    model.add(Dense(256), W_regularizer=l2(0.001))
     model.add(ELU())
-    model.add(Dense(128))
+    model.add(Dense(128), W_regularizer=l2(0.001))
     model.add(ELU())
-    model.add(Dense(1))
+    model.add(Dense(2), W_regularizer=l2(0.001))
 
     model.compile(loss='mean_squared_error',
                   optimizer='adam',
@@ -86,7 +89,7 @@ def main(*args, **kwargs):
         print("number of train output sets:", train_y.shape)
         print("number of test output sets:", test_y.shape)
 
-        model = build_cnn(w=150, h=150, d=3)
+        model = build_cnn(w=200, h=150, d=3)
         if kwargs['mode'] == 'train':
             stop_callbacks = callbacks.EarlyStopping(monitor='val_loss',patience=30, verbose=0, mode='min',min_delta=0)
             chekpoint = callbacks.ModelCheckpoint(saved_file_name, monitor='val_loss',verbose=0,save_best_only=True,mode='min')

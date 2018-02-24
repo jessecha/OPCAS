@@ -36,6 +36,7 @@ def load_x_dataset(n_stacked, path, n_jump=None, h=108, w=108, d=1):
         img = cv2.imread(os.path.join(path, fname))  # 
         img = img[:, :]
         img = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)  # 108 x 108 x 3
+	img = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
         #img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
         #lower_green = np.array([50,100,50])
         #upper_green = np.array([75,255,230])
