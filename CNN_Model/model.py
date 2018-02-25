@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import Flatten, Activation, Dense, Dropout, MaxPooling3D, Conv3D, Conv2D, MaxPooling2D, SpatialDropout2D
+from keras.layers import Flatten, Activation, Dense, Dropout, MaxPooling3D, Conv3D, Convolution2D, MaxPooling2D, SpatialDropout2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.noise import AlphaDropout
 from sklearn.externals import joblib
@@ -7,36 +7,31 @@ import matplotlib.pyplot as plt
 
 def build_cnn(w=200, h=150, d=3):
     model = Sequential()
-
-    model.add(Conv2D(filters=32, kernel_size=(3, 3),
-        strides=(3,3),data_format='channels_last', border_mode='same',
-        input_shape=(h, w, d)) )
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-
-    model.add(Conv2D(filters=64, kernel_size=(3, 3), strides=(1,1),data_format='channels_last', border_mode='same'))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-
-    model.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(1,1),data_format='channels_last', border_mode='same'))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-
+    model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
+    model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="same", W_regularizer=l2(0.001)))
+    model.add(ELU())
+    model.add(Convolution2D(36, 5, 5, subsample=(2, 2), border_mode="same", W_regularizer=l2(0.001)))
+    model.add(ELU())
+    model.add(Convolution2D(48, 3, 3, subsample=(2, 2), border_mode="same", W_regularizer=l2(0.001)))
+    model.add(ELU())
+    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode="same", W_regularizer=l2(0.001)))
+    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode='same', W_regularizer=l2(0.001)))
+    model.add(ELU())
     model.add(Flatten())
-
-    model.add(Dense(256))
+    model.add(Dropout(.2))
+    model.add(ELU())
+    model.add(Dense(512), W_regularizer=l2(0.001))
     model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-
-    model.add(Dense(256))
+    model.add(Dropout(.5))
+    model.add(ELU())
+    model.add(Dense(256), W_regularizer=l2(0.001))
     model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-
-    model.add(Dense(2))
+    model.add(ELU())
+    model.add(Dense(128), W_regularizer=l2(0.001))
+    model.add(BatchNormalization())
+    model.add(ELU())
+    model.add(Dense(2), W_regularizer=l2(0.001))
     model.add(Activation('tanh'))
-
     model.compile(loss='mean_squared_error',
                   optimizer='adam',
                   metrics=['accuracy'])

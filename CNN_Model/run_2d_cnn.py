@@ -19,7 +19,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from keras.models import Sequential
-from keras.layers import Flatten, Conv2D, Activation, Dense, Dropout, MaxPooling2D, SpatialDropout2D
+from keras.layers import Flatten, Convolution2D, Activation, Dense, Dropout, MaxPooling2D, SpatialDropout2D
 from keras import optimizers
 from keras import regularizers
 from keras.layers.normalization import BatchNormalization
