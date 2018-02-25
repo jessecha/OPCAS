@@ -1,7 +1,7 @@
   # DNRacing
-This repository is for the scaled V2V autonomous motorsport project involving two 1:8 scale RC cars equipped with high speed USB3.0 Ximea XiQ CMOS Cameras on a Nvidia Jetson TX2. The cars are built on top of OFNA DM1-Spec-E and Hong Nor X3-GT chassis. Arduino Uno boards send PWM signals to the RC ESCs (Tekin RX8 v.2) and the servos used to steer the vehicle, as well as the servos used for the pan/tilt camera mount. The Jetson TX2s are powered by 120W Goal Zero Sherpa 100 battery packs. The camera videofeed is streamed with an Amimon Connex HDMI wireless transmitter, and the PPM radio control signals are transmitted with a TBS CrossFire LRS. The environment for deployment is within Linux Ubuntu 16.02.3 LTS and ROS Kinetic Kame. 
+This repository is for the scaled V2V autonomous motorsport project involving two 1:8 scale RC cars equipped with high speed USB3.0 Ximea XiQ CMOS Cameras on a Nvidia Jetson TX2. The cars are built on top of OFNA DM1-Spec-E and Hong Nor X3-GT chassis. Arduino Uno boards send PWM signals to the RC ESCs (Tekin RX8 v.2) and the servos used to steer the vehicle, as well as the servos used for the pan/tilt camera mount. The Jetson TX2s are powered by 120W Goal Zero Sherpa 100 battery packs. The camera videofeed is streamed with an Amimon Connex HDMI wireless transmitter, and the PPM radio control signals are transmitted with a Futaba TX/RX. The environment for deployment is within Linux Ubuntu 16.02.3 LTS and ROS Kinetic Kame. 
 
-Current work involves the use of 3D CNN for a multi-agent end-to-end behavioral cloning-based racing architecture. <br />
+Current work involves the use of convolutional neural networks for a multi-agent end-to-end behavioral cloning-based racing architecture. <br />
 
   <**3D_CNN_Model**> <br />
 The end-to-end, behavioral cloning 3D CNN model uses a stack of images with specified jumps. <br />
@@ -39,9 +39,10 @@ This folder contains scripts used previously (e.g. for AHRS IMUs and MarvelMind 
     Nvidia Jetson TX1 (Discontinued)  <br /> 
     **FPV RX/TX Interface** <br />
     Amimon Connex <br />
-    TBS BlackSheep Crossfire RX/TX <br />
+    TBS BlackSheep Crossfire RX/TX (Future Work) <br />
+    Futaba RX/TX
     **Sensors** <br />
-    Ximea XiQ CMOS Camera x2 <br />
+    Ximea XiQ CMOS Camera with 1.8mm fisheye lens x2 <br />
     MarvelMind Indoor Positioning System (Discontinued) <br />
     Hokuyo UST-10LX LIDAR (Discontinued) <br />
     Razor M0 AHRS Inertial Measurement Unit (Discontinued) <br />
@@ -55,7 +56,7 @@ This folder contains scripts used previously (e.g. for AHRS IMUs and MarvelMind 
     Pinion Gear: 11T Steel x2 <br />
     Spur Gear: 48T Steel x2  <br />
     Motor: TrackStar 2650Kv Brushless Motor x2 <br />
-    Tires: HPI Desert Buster 190/60 x8 <br />
+    Tires: HPI Desert Buster 190/60 x8 (Future Work) <br />
     **PowerSupply** <br />
     GoalZero Sherpa 100 Battery Pack x2 <br />
     5000mAh 11.1v LiPo Battery Pack x2 <br />
