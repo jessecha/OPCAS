@@ -74,7 +74,7 @@ def load_y_dataset(n_stacked, path, n_jump=None):
 
 
 
-def load_dataset(n_stacked,  img_path, out_path, h=250, w=300, d=3,
+def load_dataset(n_stacked,  img_path, out_path, h=200, w=200, d=3,
                  val_size=None, test_size=None, n_jump=None):
     assert test_size is None or (test_size >= 0.0 and test_size <= 1.0)
     assert val_size is None or (val_size >= 0.0 and val_size <= 1.0)
