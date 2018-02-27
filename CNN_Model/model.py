@@ -7,36 +7,51 @@ from keras.regularizers import l2
 from keras.layers.advanced_activations import ELU
 import matplotlib.pyplot as plt
 
-def build_cnn(w=200, h=150, d=3):
+def build_cnn(w=200, h=200, d=3):
     model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
-    model.add(Convolution2D(24, 5, 5, subsample=(2, 2), border_mode="same", kernel_regularizer=l2(0.001)))
+    model.add(Convolution2D(filters=32, kernel_size=(5, 5),
+        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     model.add(ELU())
-    model.add(Convolution2D(36, 5, 5, subsample=(2, 2), border_mode="same", kernel_regularizer=l2(0.001)))
+   #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
+    model.add(Convolution2D(filters=32, kernel_size=(5, 5),
+        strides=(3,3),data_format='channels_last', border_mode='same',
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     model.add(ELU())
-    model.add(Convolution2D(48, 3, 3, subsample=(2, 2), border_mode="same", kernel_regularizer=l2(0.001)))
+    model.add(Convolution2D(filters=48, kernel_size=(3, 3),
+        strides=(3,3),data_format='channels_last', border_mode='same',
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     model.add(ELU())
-    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode="same", kernel_regularizer=l2(0.001)))
-    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode='same', kernel_regularizer=l2(0.001)))
+    model.add(Convolution2D(filters=48, kernel_size=(3, 3),
+        strides=(3,3),data_format='channels_last', border_mode='same',
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+    model.add(Convolution2D(filters=64, kernel_size=(3, 3),
+        strides=(3,3),data_format='channels_last', border_mode='same',
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+    model.add(ELU())
+    model.add(Convolution2D(filters=64, kernel_size=(3, 3),
+        strides=(3,3),data_format='channels_last', border_mode='same',
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     model.add(ELU())
     model.add(Flatten())
-    model.add(Dropout(.2))
+    model.add(Dropout(.5))
     model.add(ELU())
-    model.add(Dense(512), kernel_regularizer=l2(0.001))
+    model.add(Dense(512, kernel_regularizer=regularizers.l2(0.001)))
     model.add(BatchNormalization())
     model.add(Dropout(.5))
     model.add(ELU())
-    model.add(Dense(256), kernel_regularizer=l2(0.001))
+    model.add(Dense(256, kernel_regularizer=regularizers.l2(0.001)))
     model.add(BatchNormalization())
     model.add(ELU())
-    model.add(Dense(128), kernel_regularizer=l2(0.001))
+    model.add(Dense(128, kernel_regularizer=regularizers.l2(0.001)))
     model.add(BatchNormalization())
     model.add(ELU())
-    model.add(Dense(2), kernel_regularizer=l2(0.001))
+    model.add(Dense(2, kernel_regularizer=regularizers.l2(0.001)))
     model.add(Activation('tanh'))
+    optimizer = optimizers.adam(lr = 0.00005)	
     model.compile(loss='mean_squared_error',
-                  optimizer='adam',
-                  metrics=['accuracy'])
+                  optimizer=optimizer,
+                  metrics=["mse", 'accuracy'])
     model.summary()
     return model
 

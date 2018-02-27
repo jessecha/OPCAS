@@ -64,7 +64,7 @@ length_of_jump = 1
 global width_of_downsize
 width_of_downsize = 200
 global height_of_downsize
-height_of_downsize =150
+height_of_downsize =200
 global image_topic
 image_topic = "/image_topic"
 global stddevthrottle
@@ -158,8 +158,8 @@ def main(*args, **kwargs):
 				pub = rospy.Publisher('/Steering', UInt16, queue_size=1)	
 				pubtwo = rospy.Publisher('/Throttle', UInt16, queue_size=1)
 				#throttle = throttle*stddevthrottle + avgthrottle - shift
-				#throttleposition = (1489 + 100*(throttle))
-				throttleposition = 1498
+				throttleposition = (1489 + 70*(throttle))
+				#throttleposition = 1498
 				#steering = steering*stddevsteering + avgsteering - shift
 				steeringangle = (103 + 100*((steering) + 0.25))
 				if steeringangle < 83:
