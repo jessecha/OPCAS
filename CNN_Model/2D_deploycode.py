@@ -92,9 +92,14 @@ def deploy_dataset(stacked_counter):
 	img_stack = []
 	cv2_img = rospy.wait_for_message(image_topic, ImageMsg, timeout=None)
 	img = (bridge.imgmsg_to_cv2(cv2_img, "rgb8"))
+	img = img[:,:,:]
+	img = cv2.resize(img,(640, 480), interpolation = cv2.INTER_AREA)
         		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
-        img = img[220:, 60:580]
+	#img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = img[200:, 60:580]
         img = cv2.resize(img, (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
+	#imgplot = plt.imshow(img)
+	#plt.show()
 			#img = cv2.cvtColor(img[i],cv2.COLOR_BGR2HSV)
         		#lower_green = np.array([50,100,50])
         		#upper_green = np.array([75,255,230])
@@ -142,7 +147,7 @@ def main(*args, **kwargs):
 	global AISTATUS
 	with tf.device('/gpu:0'):
 		model = build_cnn(width_of_downsize, height_of_downsize, 3)
-    		saved_file_name = './2dcnn.hdf5'
+    		saved_file_name = './model.hdf5'
     		model.load_weights(saved_file_name)
 		while True: 
 			# subscribed to joystick inputs on topic "joy"
@@ -151,17 +156,17 @@ def main(*args, **kwargs):
 			if AISTATUS.axes[1] < 0.4:
 				deploy_x = deploy_dataset(stacked_counter)
 				#stacked_counter = stacked_counter + 1
-   				model_y = model.predict(np.squeeze(deploy_x, axis =1), batch_size=1, verbose=0)
+   				model_y = model.predict(np.squeeze(deploy_x, axis = 0), batch_size=1, verbose=0)
     				attrs = ['steering', 'throttle'] 
-    				steering = float(model_y[0][0])
-    				throttle = float(model_y[0][1])
+    				steering = float(model_y[0,0])
+    				throttle = float(model_y[0,1])
 				pub = rospy.Publisher('/Steering', UInt16, queue_size=1)	
 				pubtwo = rospy.Publisher('/Throttle', UInt16, queue_size=1)
 				#throttle = throttle*stddevthrottle + avgthrottle - shift
-				throttleposition = (1489 + 70*(throttle))
+				throttleposition = (1489 + 20*(throttle))
 				#throttleposition = 1498
 				#steering = steering*stddevsteering + avgsteering - shift
-				steeringangle = (103 + 100*((steering) + 0.25))
+				steeringangle = (103 + 100*((steering)+0.25))
 				if steeringangle < 83:
 					steeringangle = 83
 				if steeringangle >127:

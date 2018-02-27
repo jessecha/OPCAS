@@ -4,6 +4,8 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.noise import AlphaDropout
 from sklearn.externals import joblib
 from keras.regularizers import l2
+from keras import regularizers
+from keras import optimizers
 from keras.layers.advanced_activations import ELU
 import matplotlib.pyplot as plt
 
