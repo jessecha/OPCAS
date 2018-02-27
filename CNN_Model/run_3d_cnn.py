@@ -106,7 +106,7 @@ def main(*args, **kwargs):
     # train result
     if kwargs['mode'] == 'train':
         print(history.history.keys())
-            # summarize history for accuracy
+        # summarize history for accuracy
         plt.plot(history.history['acc'])
         plt.plot(history.history['val_acc'])
         plt.title('model accuracy')

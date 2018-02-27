@@ -87,7 +87,7 @@ def load_dataset(n_stacked,  img_path, out_path, h=200, w=200, d=3,
     val_x, val_y = test_x, test_y = None, None
 
     if test_size is not None:
-        train_x, test_x, train_y, text_y = train_test_split(
+        train_x, test_x, train_y, test_y = train_test_split(
                 x, y, test_size=test_size,
                 random_state=123, shuffle=True
         )
@@ -98,5 +98,5 @@ def load_dataset(n_stacked,  img_path, out_path, h=200, w=200, d=3,
                 random_state=123, shuffle=True
         )
 
-    return train_x, val_x, test_x, train_y, val_y, text_y
+    return train_x, val_x, test_x, train_y, val_y, test_y
 

@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 import time
 import pandas as pd
-
+from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from keras.models import Sequential
@@ -84,9 +84,10 @@ input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     model.add(ELU())
     model.add(Dense(2, kernel_regularizer=regularizers.l2(0.001)))
     model.add(Activation('tanh'))
+    optimizer = optimizers.adam(lr = 0.00005)	
     model.compile(loss='mean_squared_error',
-                  optimizer='adam',
-                  metrics=['accuracy'])
+                  optimizer=optimizer,
+                  metrics=["mse", 'accuracy'])
     model.summary()
     return model
 
@@ -120,43 +121,43 @@ def main(*args, **kwargs):
 
         model = build_cnn(w=200, h=200, d=3)
         if kwargs['mode'] == 'train':
-            stop_callbacks = callbacks.EarlyStopping(monitor='val_loss',patience=30, verbose=1, mode='min',min_delta=0)
-            chekpoint = callbacks.ModelCheckpoint(saved_file_name, monitor='val_loss',verbose=1,save_best_only=True,mode='min')
+            stop_callbacks = callbacks.EarlyStopping(monitor='val_loss',patience=50, verbose=0, mode='min',min_delta=0)
+            checkpoint = callbacks.ModelCheckpoint(saved_file_name, monitor='val_loss',verbose=1,save_best_only=True,mode='min')
             history = model.fit(train_x, train_y,
-                    batch_size=64,epochs=50000,callbacks=[stop_callbacks,chekpoint],
-                    validation_data=(val_x, val_y),shuffle=True)
+                    batch_size=128,epochs=50000,callbacks=[stop_callbacks,checkpoint],
+                    validation_data=(val_x, val_y),shuffle=True, verbose=1)
 
         print("Start test....")
         model.load_weights(saved_file_name)
         model_y = model.predict(test_x, batch_size=1, verbose=0)
-
-
-    # print(history.history.keys())
-    #     # summarize history for accuracy
-    # plt.plot(history.history['acc'])
-    # plt.plot(history.history['val_acc'])
-    # plt.title('model accuracy')
-    # plt.ylabel('accuracy')
-    # plt.xlabel('epoch')
-    # plt.legend(['train', 'test'], loc='upper left')
-    # plt.show()
-    # # summarize history for loss
-    # plt.plot(history.history['loss'])
-    # plt.plot(history.history['val_loss'])
-    # plt.title('model loss')
-    # plt.ylabel('loss')
-    # plt.xlabel('epoch')
-    # plt.legend(['train', 'test'], loc='upper left')
-    # plt.show()
+	scores = model.evaluate(test_x, test_y, batch_size=1, verbose=1)
+	print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+	print("%s: %.2f%%" % (model.metrics_names[0], scores[0]*100))
+	# summarize history for accuracy
+        plt.plot(history.history['acc'])
+        plt.plot(history.history['val_acc'])
+        plt.title('model accuracy')
+        plt.ylabel('accuracy')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'val'], loc='upper left')
+        plt.show()
+        
+        # summarize history for loss
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['val_loss'])
+        plt.title('model loss')
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'val'], loc='upper left')
+        plt.show()
 
     # test result
     attrs = ['steering', 'throttle']
     for i in range(2):
         mare = mean_absolute_relative_error(test_y[:,i], model_y[:,i])
         print(attrs[i] +' mare: ' + str(mare))
-        R2_val = coefficient_of_determination(test_y[:,i], model_y[:,i])
+        R2_val = r2_score(test_y[:,i], model_y[:,i])
         print(attrs[i] +'R^2: ' + str(R2_val))
-
     csvdata = pd.DataFrame(test_y, columns=attrs)
     csvdata['model_steering'] = model_y[:,0]
     csvdata['model_throttle'] = model_y[:,1]
@@ -176,23 +177,23 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--n_jump", help="time interval to get input, 0 for n_jump=n_stacked",
-        type=int, default=4
+        type=int, default=1
     )
     parser.add_argument(
         "--n_stacked", help="# of stacked frame for time axis",
-        type=int, default=7
+        type=int, default=1
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=108
+        type=int, default=200
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=108
+        type=int, default=200
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
-        type=int, default=1
+        type=int, default=3
     )
 
     args = parser.parse_args()
