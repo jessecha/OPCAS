@@ -139,7 +139,7 @@ class ImageCreator():
 		        if (cmp(topic, "image_topic") == 0):
                         
 		            try:
-		                cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+		                cv_image = self.bridge.imgmsg_to_cv2(msg, "rgb8")
 				cv_image = cv_image[:,:,:]
                                 height, width, channels = cv_image.shape 
 				cv_image = cv2.resize(cv_image,(640, 480), interpolation = cv2.INTER_AREA)

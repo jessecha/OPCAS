@@ -15,7 +15,7 @@ from sklearn.externals import joblib
 import matplotlib.pyplot as plt
 
 
-def load_x_dataset(n_stacked, path, n_jump=None, h=108, w=108, d=1):
+def load_x_dataset(n_stacked, path, n_jump=None, h=200, w=200, d=3):
     #assert h == w
     print("image loading...")
     if n_jump is None:

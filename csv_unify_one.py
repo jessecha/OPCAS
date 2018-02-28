@@ -340,10 +340,9 @@ with open('training_dataset.csv', 'w+') as csvfiletrain:
 
 		for d in range(len(mylist)):	
 		  	if camera_image[a][38:59] == mylist[d]:
-				print("Converting..." + str(a+1) + ' out of ' + str(lengthofdata*2))		
-				im = Image.open(camera_image[a][:59])
-				rgb_im = im.convert('RGB')
-				rgb_im.save(path + '/' + str(imgcount) + '.jpg')
+				print("Converting..." + str(a+1) + ' out of ' + str(lengthofdata*2))	
+				im = cv2.IMREAD_COLOR(camera_image[a][:59])	
+				cv2.imwrite(path + '/' + str(imgcount) + '.png', im)
 				imgcount = imgcount + 1;
 
 	for a in range(int(lengthofdatatwo)):
@@ -353,11 +352,14 @@ with open('training_dataset.csv', 'w+') as csvfiletrain:
 		mylist = os.listdir(originalpath);
 		for d in range(len(mylist)):	
 		  	if camera_image_flipped[a][38:59] == mylist[d]:
-				print("Converting..." + str(lengthofdata+a+1) + ' out of ' + str(lengthofdatatwo*2))		
-				im = Image.open(camera_image_flipped[a][:59])
-				rgb_im = im.convert('RGB')
-				rgb_im = rgb_im.transpose(Image.FLIP_LEFT_RIGHT)
-				rgb_im.save(path + '/' + str(imgcount) + '.jpg')
+				print("Converting..." + str(lengthofdata+a+1) + ' out of ' + str(lengthofdatatwo*2))
+				im = cv2.IMREAD_COLOR(camera_image_flipped[a][:59])
+				horizontal_im = cv2.flip(im, 0)	
+				cv2.imwrite(path + '/' + str(imgcount) + '.png', horizontal_im)		
+				#im = Image.open(camera_image_flipped[a][:59])
+				#rgb_im = im.convert('RGB')
+				#rgb_im = rgb_im.transpose(Image.FLIP_LEFT_RIGHT)
+				#rgb_im.save(path + '/' + str(imgcount) + '.png')
 				imgcount = imgcount + 1;
 		
 
