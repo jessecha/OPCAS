@@ -91,7 +91,7 @@ def deploy_dataset(stacked_counter):
 	x = []
 	img_stack = []
 	cv2_img = rospy.wait_for_message(image_topic, ImageMsg, timeout=None)
-	img = (bridge.imgmsg_to_cv2(cv2_img, "rgb8"))
+	img = (bridge.imgmsg_to_cv2(cv2_img, "bgr8"))
 	img = img[:,:,:]
 	img = cv2.resize(img,(640, 480), interpolation = cv2.INTER_AREA)
         		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
