@@ -1,12 +1,17 @@
 from keras.layers import Input, Dense, merge
+from keras.layers.convolutional import Conv2DTranspose
 from keras.models import Model
-from keras.layers import Convolution2D, MaxPooling2D, Reshape, BatchNormalization
+from keras.models import Sequential
+from keras.layers import Convolution2D, MaxPooling2D, Reshape, BatchNormalization, Lambda
 from keras.layers import Activation, Dropout, Flatten, Dense
+from keras.layers.advanced_activations import ELU
+from keras import regularizers
+from keras import optimizers
+from keras import backend as K
 import tensorflow as tf
 import numpy as np
+import cv2
 from matplotlib import pyplot as plt
-%matplotlib inline
-from keras import backend as K
 from matplotlib import animation
 from IPython.display import display, HTML
 from glob import iglob
@@ -15,27 +20,28 @@ def build_cnn(w=200, h=200, d=3):
     model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
     model.add(Convolution2D(filters=32, kernel_size=(5, 5),
-        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv1'))
     model.add(ELU())
    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
     model.add(Convolution2D(filters=32, kernel_size=(5, 5),
         strides=(3,3),data_format='channels_last', border_mode='same',
-input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv2'))
     model.add(ELU())
     model.add(Convolution2D(filters=48, kernel_size=(3, 3),
         strides=(3,3),data_format='channels_last', border_mode='same',
-input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv3'))
     model.add(ELU())
     model.add(Convolution2D(filters=48, kernel_size=(3, 3),
         strides=(3,3),data_format='channels_last', border_mode='same',
-input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv4'))
+    model.add(ELU())	
     model.add(Convolution2D(filters=64, kernel_size=(3, 3),
         strides=(3,3),data_format='channels_last', border_mode='same',
-input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv5'))
     model.add(ELU())
     model.add(Convolution2D(filters=64, kernel_size=(3, 3),
         strides=(3,3),data_format='channels_last', border_mode='same',
-input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv6'))
     model.add(ELU())
     model.add(Flatten())
     model.add(Dropout(.5))
@@ -60,16 +66,28 @@ input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     return model
 
 model = build_cnn()
-model.load_weights('model.h5')
+model.load_weights('model.hdf5')
 
 img_in = Input(shape=(200, 200, 3), name='img_in')
+h = 200
+w = 200
+d = 3
 x = img_in
-x = Convolution2D(32, (5,5), strides=(3,3), activation='elu', name='conv1')(x)
-x = Convolution2D(32, (5,5), strides=(3,3), activation='elu', name='conv2')(x)
-x = Convolution2D(48, (3,3), strides=(3,3), activation='elu', name='conv3')(x)
-x = Convolution2D(48, (3,3), strides=(3,3), activation='elu', name='conv4')(x)
-x = Convolution2D(64, (3,3), strides=(3,3), activation='elu', name='conv5')(x)
-conv_6 = Convolution2D(64, (3,3), strides=(3,3), activation='elu', name='conv6')(x)
+#x = Lambda(lambda z: z/127.5 - 1.0,input_shape=(200,200,3))(x)
+
+x = Convolution2D(filters=32, kernel_size=(5, 5),
+        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv1', activation='elu')(x)
+x = Convolution2D(filters=32, kernel_size=(5, 5),
+        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv2', activation='elu')(x)
+x = Convolution2D(filters=48, kernel_size=(3, 3),
+        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv3', activation='elu')(x)
+x = Convolution2D(filters=48, kernel_size=(3, 3),
+        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv4', activation='elu')(x)
+x = Convolution2D(filters=64, kernel_size=(3, 3),
+        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), name='conv5', activation='elu')(x)
+conv_6 = Convolution2D(filters=64, kernel_size=(3, 3),
+        strides=(3,3),data_format='channels_last', border_mode='same',
+input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001), activation='elu', name='conv6')(x)
 convolution_part = Model(inputs=[img_in], outputs=[conv_6])
 for layer_num in ('1', '2', '3', '4', '5','6'):
     convolution_part.get_layer('conv' + layer_num).set_weights(model.get_layer('conv' + layer_num).get_weights())
@@ -106,12 +124,65 @@ def compute_visualisation_mask(img):
             np.reshape(averaged_activation, (1,averaged_activation.shape[0],averaged_activation.shape[1],1)),
             tf.float32
         )
-        conv = tf.nn.conv2d_transpose(
+	
+        #conv = tf.nn.conv2d_transpose(
+        #    x, layers_kernels[layer],
+        #    output_shape=(1,output_shape[0],output_shape[1], 1), 
+        #    strides=layers_strides[layer], 
+        #    padding='VALID'
+        #)
+
+
+	if layer == 6:
+		conv = tf.nn.conv2d_transpose(
+            value = x, filters = layers_kernels[layer],
+            output_shape=(1,output_shape[0],output_shape[1], 1), 
+            strides=layers_strides[layer], 
+            padding='VALID'
+        )
+	#	conv = Conv2DTranspose(64, (3,3), strides=(3, 3), padding='valid', data_format=None, activation=None, use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
+	if layer == 5:
+		conv = tf.nn.conv2d_transpose(
             x, layers_kernels[layer],
             output_shape=(1,output_shape[0],output_shape[1], 1), 
             strides=layers_strides[layer], 
             padding='VALID'
         )
+	#	conv = Conv2DTranspose(64, (3,3), strides=(3, 3), padding='valid', data_format=None, activation=None, use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
+ 	if layer == 4:
+		conv = tf.nn.conv2d_transpose(
+            x, layers_kernels[layer],
+            output_shape=(1,output_shape[0],output_shape[1], 1), 
+            strides=layers_strides[layer], 
+            padding='VALID'
+        )
+	#	conv = Conv2DTranspose(48, (3,3), strides=(3, 3), padding='valid', data_format=None, activation=None, use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
+	if layer == 3: 
+		conv = tf.nn.conv2d_transpose(
+            x, layers_kernels[layer],
+            output_shape=(1,output_shape[0],output_shape[1], 1), 
+            strides=layers_strides[layer], 
+            padding='VALID'
+        )
+	#	conv = Conv2DTranspose(48, (3,3), strides=(3, 3), padding='valid', data_format=None, activation=None, use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
+	if layer == 2:
+		conv = tf.nn.conv2d_transpose(
+            x, layers_kernels[layer],
+            output_shape=(1,output_shape[0],output_shape[1], 1), 
+            strides=layers_strides[layer], 
+            padding='VALID'
+        )
+	#	conv = Conv2DTranspose(32, (5,5), strides=(3, 3), padding='valid', data_format=None, activation=None, use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
+	if layer == 1: 
+		conv = tf.nn.conv2d_transpose(
+            x, layers_kernels[layer],
+            output_shape=(1,output_shape[0],output_shape[1], 1), 
+            strides=layers_strides[layer], 
+            padding='VALID'
+        )
+	#	conv = Conv2DTranspose(32, (5,5), strides=(3, 3), padding='valid', data_format=None, activation=None, use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None, activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
+
+
         with tf.Session() as session:
             result = session.run(conv)
         upscaled_activation = np.reshape(result, output_shape)
@@ -135,8 +206,21 @@ imgs = []
 alpha = 0.004
 beta = 1.0 - alpha
 counter = 0
-for path in sorted(iglob('/home/jesse/Desktop/imagefiles/image/*.png')):
+img_stack = []
+z = []
+for path in sorted(iglob('/home/jesse/Desktop/DNRacing/croppedjpg/pastjpgimage/*.jpg')):
     img = cv2.imread(path)
+    img = img[200:, 60:580]
+    img = cv2.resize(img, (200, 200), interpolation=cv2.INTER_CUBIC)
+    img_stack.append(img.astype(np.float32))
+    #if len(img_stack) > 1:
+    #    img_stack = img_stack[-1:]
+
+    #if (i+1) >= 1 and (i+1 - 1) % n_jump == 0:
+    z.append(np.stack(img_stack))
+    img =  np.stack(z)
+    img = img.squeeze(axis = 0)
+    img = img.squeeze(axis = 0)
     salient_mask = compute_visualisation_mask(img)
     salient_mask_stacked = np.dstack((salient_mask,salient_mask))
     salient_mask_stacked = np.dstack((salient_mask_stacked,salient_mask))
