@@ -47,27 +47,32 @@ def build_cnn(w=200, h=200, d=3):
     model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
     model.add(Convolution2D(filters=32, kernel_size=(5, 5),
-        strides=(3,3),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+        strides=(2,2),data_format='channels_last', border_mode='same', input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.01)))
     model.add(ELU())
-   #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-    model.add(Convolution2D(filters=32, kernel_size=(5, 5),
-        strides=(3,3),data_format='channels_last', border_mode='same',
+    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
+    model.add(Convolution2D(filters=48, kernel_size=(5, 5),
+        strides=(2,2),data_format='channels_last', border_mode='same',
 input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     model.add(ELU())
+    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
     model.add(Convolution2D(filters=48, kernel_size=(3, 3),
-        strides=(3,3),data_format='channels_last', border_mode='same',
+        strides=(2,2),data_format='channels_last', border_mode='same',
 input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     model.add(ELU())
-    model.add(Convolution2D(filters=48, kernel_size=(3, 3),
-        strides=(3,3),data_format='channels_last', border_mode='same',
+    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
+    model.add(Convolution2D(filters=64, kernel_size=(3, 3),
+        strides=(2,2),data_format='channels_last', border_mode='same',
 input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+    model.add(ELU())
+    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
+    model.add(Convolution2D(filters=64, kernel_size=(3, 3),
+        strides=(2,2),data_format='channels_last', border_mode='same',
+     input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+    model.add(ELU())
+    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
     model.add(Convolution2D(filters=64, kernel_size=(3, 3),
         strides=(3,3),data_format='channels_last', border_mode='same',
-input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
-    model.add(ELU())
-    model.add(Convolution2D(filters=64, kernel_size=(3, 3),
-        strides=(3,3),data_format='channels_last', border_mode='same',
-input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
+    input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
     model.add(ELU())
     model.add(Flatten())
     model.add(Dropout(.5))
@@ -101,7 +106,7 @@ def main(*args, **kwargs):
         os.path.dirname(os.path.abspath(os.path.dirname(__file__))),
         'dataset'
     )
-    img_path = '/home/jesse/Desktop/jpgimage'
+    img_path = '/home/jesse/Desktop/imagefiles/image_set'
     out_path = '/home/jesse/Desktop/training_dataset.csv'
     with tf.device('/gpu:0'):
         train_x, val_x, test_x, train_y, val_y, test_y = load_dataset(
@@ -124,7 +129,7 @@ def main(*args, **kwargs):
             stop_callbacks = callbacks.EarlyStopping(monitor='val_loss',patience=50, verbose=0, mode='min',min_delta=0)
             checkpoint = callbacks.ModelCheckpoint(saved_file_name, monitor='val_loss',verbose=1,save_best_only=True,mode='min')
             history = model.fit(train_x, train_y,
-                    batch_size=128,epochs=50000,callbacks=[stop_callbacks,checkpoint],
+                    batch_size=64,epochs=50000,callbacks=[stop_callbacks,checkpoint],
                     validation_data=(val_x, val_y),shuffle=True, verbose=1)
 
         print("Start test....")

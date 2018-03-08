@@ -15,7 +15,7 @@ from sklearn.externals import joblib
 import matplotlib.pyplot as plt
 
 
-def load_x_dataset(n_stacked, path, n_jump=None, h=200, w=200, d=3):
+def load_x_dataset(n_stacked, path, n_jump=None, w=320, h=240, d=3):
     #assert h == w
     print("image loading...")
     if n_jump is None:
@@ -34,7 +34,7 @@ def load_x_dataset(n_stacked, path, n_jump=None, h=200, w=200, d=3):
     print("image processing (resizing, cropping)")
     for i, fname in tqdm(enumerate(fnames), total=len(fnames), leave=False):
         img = cv2.imread(os.path.join(path, fname))  # 
-        img = img[200:, 60:580]
+        img = img[225:285, 230:445]
         img = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)  # 108 x 108 x 3
 	#img = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
         #img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
@@ -43,9 +43,9 @@ def load_x_dataset(n_stacked, path, n_jump=None, h=200, w=200, d=3):
         # Threshold the HSV image to get only green colors
         #mask = cv2.inRange(img, lower_green, upper_green)
         #img = cv2.bitwise_and(img,img,mask = mask)
-        if d == 1:
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 108 x 108
-            img = np.expand_dims(img, axis=-1)  # 108 x 108 x 1
+        #if d == 1:
+        #    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 108 x 108
+        #    img = np.expand_dims(img, axis=-1)  # 108 x 108 x 1
         if i == 100:
             cv2.imshow(str(img.shape), img)
             cv2.waitKey(3000)
@@ -74,7 +74,7 @@ def load_y_dataset(n_stacked, path, n_jump=None):
 
 
 
-def load_dataset(n_stacked,  img_path, out_path, h=200, w=200, d=3,
+def load_dataset(n_stacked,  img_path, out_path, w=320, h=240, d=3,
                  val_size=None, test_size=None, n_jump=None):
     assert test_size is None or (test_size >= 0.0 and test_size <= 1.0)
     assert val_size is None or (val_size >= 0.0 and val_size <= 1.0)
