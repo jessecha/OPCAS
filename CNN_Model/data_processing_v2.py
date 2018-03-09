@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
 import numpy as np
 import cv2
 import time
@@ -10,10 +9,8 @@ import pandas as pd
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
-
 from sklearn.externals import joblib
 import matplotlib.pyplot as plt
-
 
 def load_x_dataset(n_stacked, path, n_jump=None, w=320, h=240, d=3):
     #assert h == w
@@ -33,9 +30,9 @@ def load_x_dataset(n_stacked, path, n_jump=None, w=320, h=240, d=3):
     img_stack = []
     print("image processing (resizing, cropping)")
     for i, fname in tqdm(enumerate(fnames), total=len(fnames), leave=False):
-        img = cv2.imread(os.path.join(path, fname))  # 
+        img = cv2.imread(os.path.join(path, fname))  
         img = img[225:285, 230:445]
-        img = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)  # 108 x 108 x 3
+        img = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)  
 	#img = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
         #img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
         #lower_green = np.array([50,100,50])
@@ -44,8 +41,8 @@ def load_x_dataset(n_stacked, path, n_jump=None, w=320, h=240, d=3):
         #mask = cv2.inRange(img, lower_green, upper_green)
         #img = cv2.bitwise_and(img,img,mask = mask)
         #if d == 1:
-        #    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 108 x 108
-        #    img = np.expand_dims(img, axis=-1)  # 108 x 108 x 1
+        #    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  
+        #    img = np.expand_dims(img, axis=-1)  
         if i == 100:
             cv2.imshow(str(img.shape), img)
             cv2.waitKey(3000)
@@ -70,9 +67,6 @@ def load_y_dataset(n_stacked, path, n_jump=None):
     y = y[n_stacked-1:: n_jump]  # start:end:n_steps
 
     return y #train_y.values, test_y.values
-
-
-
 
 def load_dataset(n_stacked,  img_path, out_path, w=320, h=240, d=3,
                  val_size=None, test_size=None, n_jump=None):

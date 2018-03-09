@@ -8,13 +8,10 @@ import cv2
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
-#config.gpu_options.per_process_gpu_memory_fraction = 0.95 #0.7
+#config.gpu_options.per_process_gpu_memory_fraction = 0.95 
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 import pickle
-
-# from car_models import cnn_cccccfffff
-
 import os
 import cv2
 import numpy as np
@@ -33,13 +30,11 @@ from keras.layers.noise import AlphaDropout
 from keras import callbacks
 from sklearn.externals import joblib
 import matplotlib.pyplot as plt
-
-# mine
 import data_processing_v2
 from model import build_3d_cnn
 from model_test_utils.metrics import mean_absolute_relative_error
 from model_test_utils.metrics import coefficient_of_determination
-
+from keras.layers.advanced_activations import ELU
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 import tensorflow as tf
 
@@ -60,7 +55,7 @@ def main(*args, **kwargs):
     img_path = os.path.join(kwargs['img_path'])
     out_path = os.path.join(kwargs['out_path'])
     n_stacked = kwargs['n_stacked']
-    # Data load
+
     train_x, val_x, test_x, train_y, val_y, test_y = data_processing_v2.load_dataset(
         n_stacked, img_path, out_path,
         h=kwargs['height'], w=kwargs['width'], d=kwargs['depth'],
@@ -81,7 +76,6 @@ def main(*args, **kwargs):
             kwargs['depth'], kwargs['n_stacked']
         )
         # input()
-
         if kwargs['mode'] == 'train':
             print("press enter")
             stop_callbacks = callbacks.EarlyStopping(
@@ -123,10 +117,7 @@ def main(*args, **kwargs):
         plt.xlabel('epoch')
         plt.legend(['train', 'val'], loc='upper left')
         plt.show()
-        
-
-
-
+       
     # val result
     attrs = ['steering', 'throttle']
     for i in range(2):
@@ -168,19 +159,19 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--n_stacked", help="# of stacked frame for time axis",
-        type=int, default=7
-    )
-    parser.add_argument(
-        "--n_jump", help="time interval to get input, 0 for n_jump=n_stacked",
         type=int, default=4
     )
     parser.add_argument(
+        "--n_jump", help="time interval to get input, 0 for n_jump=n_stacked",
+        type=int, default=2
+    )
+    parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=108
+        type=int, default=160
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=108
+        type=int, default=120
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
@@ -200,7 +191,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--batch_size", help="batch_size",
-        type=int, default=4
+        type=int, default=32
     )
 
     args = parser.parse_args()
