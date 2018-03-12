@@ -24,9 +24,9 @@ config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
 global n_stacked
-n_stacked = 4
+n_stacked = 2
 
-def build_cnn(w=160, h=120, d=3, s=n_stacked):
+def build_cnn(w=320, h=240, d=3, s=n_stacked):
     model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1.0, input_shape=(s,h,w,d)))
     model.add(Convolution3D(filters=24, kernel_size=(5,5,5),
@@ -75,9 +75,9 @@ def build_cnn(w=160, h=120, d=3, s=n_stacked):
 model = build_cnn()
 model.load_weights('model.hdf5')
 
-img_in = Input(shape=(n_stacked, 120, 160, 3), name='img_in')
-h = 120
-w = 160
+img_in = Input(shape=(n_stacked, 240, 320, 3), name='img_in')
+h = 240
+w = 320
 d = 3
 s = n_stacked
 x = img_in
@@ -217,7 +217,7 @@ for a in range(quarterlength):
 	for b in range(n_stacked):	
 	    img = cv2.imread('/home/jesse/Desktop/imagefiles/no_crop_image_set/'+ str(number) + '.png')	
 	    img = img[225:285, 230:445]
-	    img = cv2.resize(img, (160, 120), interpolation=cv2.INTER_CUBIC)
+	    img = cv2.resize(img, (320, 240), interpolation=cv2.INTER_CUBIC)
 	    img_stack.append(img.astype(np.float32))
 	    display_img_stack.append(img.astype(np.float32))
 	    number = number + 1	
@@ -240,16 +240,17 @@ for a in range(quarterlength):
 	for a in range(n_stacked):
     		temp_img = cv2.imread('/home/jesse/Desktop/imagefiles/no_crop_image_set/'+ str(numbertwo) + '.png')	
 	        temp_img = temp_img[225:285, 230:445]
-	        temp_img = cv2.resize(temp_img, (160, 120), interpolation=cv2.INTER_CUBIC)
+	        temp_img = cv2.resize(temp_img, (320, 240), interpolation=cv2.INTER_CUBIC)
 		temp_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB)
-	        numbertwo = numbertwo + 1	
-		salient_masked = salient_mask[3,:,:]
-		salient_mask_stacked = np.dstack((salient_masked,salient_masked))
-		salient_mask_stacked = np.dstack((salient_mask_stacked,salient_masked))
-		blend = cv2.addWeighted(temp_img.astype('float32'), alpha, salient_mask_stacked, beta, 0.0)			
-
+		for b in range(n_stacked)
+			salient_masked = salient_mask[b,:,:]
+			salient_mask_stacked = np.dstack((salient_masked,salient_masked))
+			salient_mask_stacked = np.dstack((salient_mask_stacked,salient_masked))
+			if b == 0:
+				blend = cv2.addWeighted(temp_img.astype('float32'), alpha, salient_mask_stacked, beta, 0.0)			
+			if b > 0:
+				blend = cv2.addWeighted(blend, alpha, salient_mask_stacked, beta, 0.0)
 		imgs.append(blend)
-		numbertwo = numbertwo + 1
 	print(counter)
         if counter >= 1000:
        		break

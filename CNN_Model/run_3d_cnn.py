@@ -159,19 +159,19 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--n_stacked", help="# of stacked frame for time axis",
-        type=int, default=4
-    )
-    parser.add_argument(
-        "--n_jump", help="time interval to get input, 0 for n_jump=n_stacked",
         type=int, default=2
     )
     parser.add_argument(
+        "--n_jump", help="time interval to get input, 0 for n_jump=n_stacked",
+        type=int, default=1
+    )
+    parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=160
+        type=int, default=320
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=120
+        type=int, default=240
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
