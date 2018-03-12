@@ -1,9 +1,9 @@
   # DNRacing
-This repository is for the scaled V2V autonomous motorsport project involving two 1:8 scale RC cars equipped with high speed USB3.0 Ximea XiQ CMOS Cameras on a Nvidia Jetson TX2. The cars are built on top of OFNA DM1-Spec-E and Hong Nor X3-GT chassis. Arduino Uno boards send PWM signals to the RC ESCs (Tekin RX8 v.2) and the servos used to steer the vehicle, as well as the servos used for the pan/tilt camera mount. The Jetson TX2s are powered by 120W Goal Zero Sherpa 100 battery packs. The camera videofeed is streamed with an Amimon Connex HDMI wireless transmitter, and the PPM radio control signals are transmitted with a Futaba TX/RX. The environment for deployment is within Linux Ubuntu 16.02.3 LTS and ROS Kinetic Kame. 
+This repository is for the scaled V2V autonomous motorsport project involving two 1:8 scale RC cars equipped with high speed USB3.0 Ximea XiQ CMOS Cameras on a Nvidia Jetson TX2. The cars are built on top of OFNA DM1-Spec-E and Hong Nor X3-GT chassis. Arduino Uno boards send PWM signals to the RC ESCs (Tekin RX8 v.2) and the servos used to steer the vehicle. The Jetson TX2s are powered by 120W Goal Zero Sherpa 100 battery packs. The camera videofeed is streamed with an Amimon Connex HDMI wireless transmitter, and the PPM radio control signals are transmitted with a Futaba TX/RX. The environment for deployment is within Linux Ubuntu 16.02.3 LTS and ROS Kinetic Kame. 
 
 Current work involves the use of convolutional neural networks for a multi-agent end-to-end behavioral cloning-based racing architecture. <br />
 
-  <**3D_CNN_Model**> <br />
+  <**CNN_Model**> <br />
 The end-to-end, behavioral cloning 3D CNN model uses a stack of images with specified jumps. <br />
 data_preprocessing_v2.py processes the .csv file which contains throttle, steering, brake inputs correlated with the corresponding image. <br />
 deploymodel.py deploys the keras model within ROS using the joy catkin package <br />
@@ -12,14 +12,6 @@ run_3d_cnn.py creates the 3D CNN model with the .csv file and the image folder <
 
   <**Catkin_PKG_Car**/src> <br />
 This folder contains all the ROS catkin packages used by the DNRacing Car. <br />
-
-  <**Catkin_PKG_Master**/src> <br />
-This folder contains all the ROS catkin packages used by the Host PC (PC that has the Logitech G27 steering wheel). <br />
-bag_converter contains the roslaunch script used to create the image folder and the image .csv file from the recorded rosbag. <br />
-dnracing_host contains the launch file used on the Host PC for training and deployment <br />
-joy contains the catkin pkg which interfaces ROS with the Logitech G27 steering wheel. <br />
-joytwo is the second joy pkg for the second vehicle <br />
-rosbag_to_csv contains the roslaunch script used to create the steering wheel .csv file from the recorded rosbag. <br />
 
   <**USBtoPPM**> <br />
 This Java application is used to convert the USB HID commands sent from the Logitech G27 Steering Wheel & Quanum Head Tracker into PPM signals.
@@ -39,7 +31,6 @@ This folder contains scripts used previously (e.g. for AHRS IMUs and MarvelMind 
     Nvidia Jetson TX1 (Discontinued)  <br /> 
     **FPV RX/TX Interface** <br />
     Amimon Connex <br />
-    TBS BlackSheep Crossfire RX/TX (Future Work) <br />
     Futaba RX/TX
     **Sensors** <br />
     Ximea XiQ CMOS Camera with 1.8mm fisheye lens x2 <br />
