@@ -9,7 +9,7 @@ from keras import optimizers
 from keras.layers.advanced_activations import ELU
 import matplotlib.pyplot as plt
 
-def build_cnn(w=320, h=240, d=3):
+def build_cnn(w=160, h=120, d=3):
     model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
     model.add(Convolution2D(filters=24, kernel_size=(5, 5),
@@ -47,7 +47,7 @@ def build_cnn(w=320, h=240, d=3):
     model.add(BatchNormalization())
     model.add(ELU())	
     model.add(Dense(2, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(Activation('tanh'))
+    model.add(Activation('linear'))
     optimizer = optimizers.adam(lr = 0.00005)	
     model.compile(loss='mean_squared_error',
                   optimizer=optimizer,
@@ -129,7 +129,7 @@ def build_3d_cnn(w, h, d, s):
     model.add(ELU())
     model.add(Dropout(0.3))	
     model.add(Dense(2))
-    model.add(Activation('tanh'))
+    model.add(Activation('linear'))
     model.compile(
         loss='mean_squared_error', optimizer='adam', metrics=['accuracy']
     )

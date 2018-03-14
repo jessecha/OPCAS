@@ -43,7 +43,7 @@ set_session(tf.Session(config=config))
 # session = tf.Session(config=config)
 
 
-def build_cnn(w=320, h=240, d=3):
+def build_cnn(w=160, h=120, d=3):
     model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
     model.add(Convolution2D(filters=24, kernel_size=(5, 5),
@@ -87,7 +87,7 @@ def build_cnn(w=320, h=240, d=3):
     model.add(BatchNormalization())
     model.add(ELU())	
     model.add(Dense(2, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(Activation('tanh'))
+    model.add(Activation('linear'))
     optimizer = optimizers.adam(lr = 0.00005)	
     model.compile(loss='mean_squared_error',
                   optimizer=optimizer,
@@ -105,11 +105,11 @@ def main(*args, **kwargs):
         os.path.dirname(os.path.abspath(os.path.dirname(__file__))),
         'dataset'
     )
-    img_path = '/home/jesse/Desktop/imagefiles/image_set'
-    out_path = '/home/jesse/Desktop/training_dataset.csv'
+    img_path = '/home/jesse/Desktop/Cropped_Dataset/image_set'
+    out_path = '/home/jesse/Desktop/Cropped_Dataset/training_dataset.csv'
     with tf.device('/gpu:0'):
         train_x, val_x, test_x, train_y, val_y, test_y = load_dataset(
-		n_stacked=1,img_path = img_path, out_path=out_path, w=320, h=240, d=3,
+		n_stacked=1,img_path = img_path, out_path=out_path, w=160, h=120, d=3,
                  val_size=0.1, test_size=0.1, n_jump=None
                 )
 	train_x = np.squeeze(train_x)
@@ -123,7 +123,7 @@ def main(*args, **kwargs):
         print("number of train output sets:", train_y.shape)
         print("number of test output sets:", test_y.shape)
 
-        model = build_cnn(w=320, h=240, d=3)
+        model = build_cnn(w=160, h=120, d=3)
         if kwargs['mode'] == 'train':
             stop_callbacks = callbacks.EarlyStopping(monitor='val_loss',patience=50, verbose=0, mode='min',min_delta=0)
             checkpoint = callbacks.ModelCheckpoint(saved_file_name, monitor='val_loss',verbose=1,save_best_only=True,mode='min')
@@ -189,11 +189,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=320
+        type=int, default=160
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=240
+        type=int, default=120
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",

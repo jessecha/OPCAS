@@ -23,7 +23,7 @@ config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'G
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
-def build_cnn(w=320, h=240, d=3):
+def build_cnn(w=160, h=120, d=3):
     model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
     model.add(Convolution2D(filters=24, kernel_size=(5, 5),
@@ -61,7 +61,7 @@ def build_cnn(w=320, h=240, d=3):
     model.add(BatchNormalization())
     model.add(ELU())	
     model.add(Dense(2, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(Activation('tanh'))
+    model.add(Activation('linear'))
     optimizer = optimizers.adam(lr = 0.00005)	
     model.compile(loss='mean_squared_error',
                   optimizer=optimizer,
@@ -70,9 +70,9 @@ def build_cnn(w=320, h=240, d=3):
     return model
 
 model = build_cnn()
-model.load_weights('model2.hdf5')
+model.load_weights('model_2D.hdf5')
 
-img_in = Input(shape=(240, 320, 3), name='img_in')
+img_in = Input(shape=(120, 160, 3), name='img_in')
 h = 320
 w = 240
 d = 3
@@ -151,12 +151,12 @@ beta = 1.0 - alpha
 counter = 0
 img_stack = []
 z = []
-for path in sorted(iglob('/home/jesse/Desktop/imagefiles/no_crop_image_set/*.png'), key=os.path.getmtime):
+for path in sorted(iglob('/home/jesse/Desktop/Cropped_Dataset/image_set/*.png'), key=os.path.getmtime):
     img = cv2.imread(path)
     #mask = cv2.imread('/home/jesse/Desktop/DNRacing/CNN_Model/overlay.png',0)
     #img = cv2.bitwise_and(img,img,mask = mask)
     img = img[225:285, 230:445]
-    img = cv2.resize(img, (320, 240), interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, (160, 120), interpolation=cv2.INTER_CUBIC)
     if counter == 1:
     	cv2.imshow(str(img.shape), img)
     	cv2.waitKey(1000)

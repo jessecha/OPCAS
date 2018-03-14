@@ -96,7 +96,7 @@ def deploy_dataset(stacked_counter):
 	img = cv2.resize(img,(640, 480), interpolation = cv2.INTER_AREA)
         		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
 	#img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = img[225:285, 230:445]
+        img = img[210:500, 70:570]
         img = cv2.resize(img, (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
 	#imgplot = plt.imshow(img)
 	#plt.show()

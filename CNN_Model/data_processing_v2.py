@@ -12,7 +12,7 @@ from sklearn import preprocessing
 from sklearn.externals import joblib
 import matplotlib.pyplot as plt
 
-def load_x_dataset(n_stacked, path, n_jump=None, w=320, h=240, d=3):
+def load_x_dataset(n_stacked, path, n_jump=None, w=160, h=120, d=3):
     #assert h == w
     print("image loading...")
     if n_jump is None:
@@ -31,7 +31,7 @@ def load_x_dataset(n_stacked, path, n_jump=None, w=320, h=240, d=3):
     print("image processing (resizing, cropping)")
     for i, fname in tqdm(enumerate(fnames), total=len(fnames), leave=False):
         img = cv2.imread(os.path.join(path, fname))  
-        img = img[225:285, 230:445]
+        img = img[210:500, 70:570]
         img = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)  
 	#img = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
         #img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
@@ -68,7 +68,33 @@ def load_y_dataset(n_stacked, path, n_jump=None):
 
     return y #train_y.values, test_y.values
 
-def load_dataset(n_stacked,  img_path, out_path, w=320, h=240, d=3,
+def load_dataset(n_stacked,  img_path, out_path, w=160, h=120, d=3,
+                 val_size=None, test_size=None, n_jump=None):
+    assert test_size is None or (test_size >= 0.0 and test_size <= 1.0)
+    assert val_size is None or (val_size >= 0.0 and val_size <= 1.0)
+
+    x = load_x_dataset(n_stacked, img_path, n_jump=n_jump, h=h, w=w, d=d)
+    y = load_y_dataset(n_stacked, out_path, n_jump=n_jump)
+    assert len(x) == len(y), "xlen{}, ylen{}".format(len(x), len(y))
+
+    train_x, train_y = x, y
+    val_x, val_y = test_x, test_y = None, None
+
+    if test_size is not None:
+        train_x, test_x, train_y, test_y = train_test_split(
+                x, y, test_size=test_size,
+                random_state=123, shuffle=True
+        )
+
+    if val_size is not None:
+        train_x, val_x, train_y, val_y = train_test_split(
+                train_x, train_y, test_size=val_size,
+                random_state=123, shuffle=True
+        )
+
+    return train_x, val_x, test_x, train_y, val_y, test_y
+
+def load_shuffled_dataset(n_stacked,  img_path, out_path, w=160, h=120, d=3,
                  val_size=None, test_size=None, n_jump=None):
     assert test_size is None or (test_size >= 0.0 and test_size <= 1.0)
     assert val_size is None or (val_size >= 0.0 and val_size <= 1.0)

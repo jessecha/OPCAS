@@ -64,7 +64,7 @@ def build_cnn(w=320, h=240, d=3, s=n_stacked):
     model.add(BatchNormalization())
     model.add(ELU())	
     model.add(Dense(2, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(Activation('tanh'))
+    model.add(Activation('linear'))
     optimizer = optimizers.adam(lr = 0.00005)	
     model.compile(loss='mean_squared_error',
                   optimizer=optimizer,
