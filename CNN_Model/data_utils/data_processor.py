@@ -12,8 +12,7 @@ from sklearn import preprocessing
 from sklearn.externals import joblib
 import matplotlib.pyplot as plt
 
-def load_x_dataset(n_stacked, path, n_jump=None, w=160, h=120, d=3):
-    #assert h == w
+def load_x_dataset(n_stacked, path, n_jump=None, w=157, h=157, d=3):
     print("image loading...")
     if n_jump is None:
         n_jump = n_stacked
@@ -33,16 +32,6 @@ def load_x_dataset(n_stacked, path, n_jump=None, w=160, h=120, d=3):
         img = cv2.imread(os.path.join(path, fname))  
         img = img[210:500, 70:570]
         img = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)  
-	#img = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
-        #img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-        #lower_green = np.array([50,100,50])
-        #upper_green = np.array([75,255,230])
-        # Threshold the HSV image to get only green colors
-        #mask = cv2.inRange(img, lower_green, upper_green)
-        #img = cv2.bitwise_and(img,img,mask = mask)
-        #if d == 1:
-        #    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  
-        #    img = np.expand_dims(img, axis=-1)  
         if i == 100:
             cv2.imshow(str(img.shape), img)
             cv2.waitKey(3000)
@@ -68,7 +57,7 @@ def load_y_dataset(n_stacked, path, n_jump=None):
 
     return y #train_y.values, test_y.values
 
-def load_dataset(n_stacked,  img_path, out_path, w=160, h=120, d=3,
+def load_dataset(n_stacked,  img_path, out_path, w=157, h=157, d=3,
                  val_size=None, test_size=None, n_jump=None):
     assert test_size is None or (test_size >= 0.0 and test_size <= 1.0)
     assert val_size is None or (val_size >= 0.0 and val_size <= 1.0)
@@ -94,7 +83,7 @@ def load_dataset(n_stacked,  img_path, out_path, w=160, h=120, d=3,
 
     return train_x, val_x, test_x, train_y, val_y, test_y
 
-def load_shuffled_dataset(n_stacked,  img_path, out_path, w=160, h=120, d=3,
+def load_shuffled_dataset(n_stacked,  img_path, out_path, w=157, h=157, d=3,
                  val_size=None, test_size=None, n_jump=None):
     assert test_size is None or (test_size >= 0.0 and test_size <= 1.0)
     assert val_size is None or (val_size >= 0.0 and val_size <= 1.0)

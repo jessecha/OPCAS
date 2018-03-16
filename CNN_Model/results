@@ -1,0 +1,11 @@
+<LRCN, 157x157, stacked=3, batchsize=32>
+steeringR^2: 0.88
+throttleR^2: 0.30
+
+<2D_CNN, 157x157, stacked=1, batchsize=32>
+steeringR^2: 0.90
+throttleR^2: 0.29
+
+<3D_CNN, 157x157, stacked=3, batchsize=32>
+steeringR^2: 0.93
+throttleR^2: 0.76

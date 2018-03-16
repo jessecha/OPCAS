@@ -1,0 +1,39 @@
+<DNR Host Startup>
+*Connect all USB ports first!
+sudo gedit ~/.bashrc
+source /opt/ros/kinetic/setup.bash
+source ~/catkin_ws/devel/setup.bash
+sudo route add -net 224.0.0.0 netmask 224.0.0.0 wlp4s0
+rosrun master_discovery_fkie master_discovery _mcast_group:=224.0.0.1
+roslaunch dnracing_host DNRacing.launch
+rosrun master_sync_fkie master_sync
+
+<ROS Data Acquisition>
+cd Desktop/imagefiles
+rosrun rosbag_to_csv rosbag_to_csv.py
+roslaunch export.launch
+python csv_unify.py
+
+<Udacity Nanodegree Course HW>
+sudo docker run -it --rm -p 8888:8888 -v `pwd`:~/src udacity/carnd-term1-starter-kit
+
+<Github Procedure>
+*First enter Github Folder
+cd Desktop/DNRacing
+*Change Files
+git add .    (or git add -U)
+*Remove files
+git rm -r FILENAME
+*Commit
+git commit -m "Describe whatever happened in the commit"
+git push origin master
+*update                                           
+git pull origin master
+
+-0.25 steering
+-0.5 throttle, reverse
+
+ python run_3d_cnn.py --n_stacked 2 --n_jump 1 --width 320 --height 240 --depth 3 --img_path /home/jesse/Desktop/imagefiles/no_crop_image_set --out_path /home/jesse/Desktop/training_set.csv --batch_size 32 train
+
+git reset HEAD~
+

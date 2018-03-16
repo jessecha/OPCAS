@@ -18,66 +18,19 @@ from IPython.display import display, HTML
 from glob import iglob
 import matplotlib.animation as animation
 from keras.backend.tensorflow_backend import set_session
+from model.models import build_2d_cnn
 config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
-#config.gpu_options.per_process_gpu_memory_fraction = 0.95 
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
-def build_cnn(w=160, h=120, d=3):
-    model = Sequential()
-    model.add(Lambda(lambda x: x/127.5 - 1.0,input_shape=(h,w,d)))
-    model.add(Convolution2D(filters=24, kernel_size=(5, 5),
-        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv1'))
-    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-    model.add(Convolution2D(filters=32, kernel_size=(5, 5),
-        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv2'))
-    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-    model.add(Convolution2D(filters=64, kernel_size=(5, 5),
-        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv3'))
-    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-    model.add(Convolution2D(filters=64, kernel_size=(3, 3),
-        strides=(1,1),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv4'))
-    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-    model.add(Convolution2D(filters=64, kernel_size=(3, 3),
-        strides=(1,1),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv5'))
-    #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
-    #model.add(Convolution2D(filters=64, kernel_size=(3, 3),
-    #    strides=(3,3),data_format='channels_last', border_mode='same',
-    #input_shape=(h, w, d), kernel_regularizer=regularizers.l2(0.001)))
-    model.add(Flatten())
-    model.add(Dropout(.3))
-    model.add(ELU())
-    model.add(Dense(1152, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(Dropout(.3))
-    model.add(ELU())
-    model.add(Dense(100, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(ELU())
-    model.add(Dense(50, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(ELU())
-    model.add(Dense(10, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(BatchNormalization())
-    model.add(ELU())	
-    model.add(Dense(2, kernel_regularizer=regularizers.l2(0.001)))
-    model.add(Activation('linear'))
-    optimizer = optimizers.adam(lr = 0.00005)	
-    model.compile(loss='mean_squared_error',
-                  optimizer=optimizer,
-                  metrics=["mse", 'accuracy'])
-    model.summary()
-    return model
+model = build_2d_cnn(w=157, h=157, d=3)
+model.load_weights('2D_CNN.hdf5')
 
-model = build_cnn()
-model.load_weights('model_2D.hdf5')
-
-img_in = Input(shape=(120, 160, 3), name='img_in')
-h = 320
-w = 240
+img_in = Input(shape=(157, 157, 3), name='img_in')
+h = 157
+w = 157
 d = 3
 x = img_in
-#x = Lambda(lambda z: z/127.5 - 1.0,input_shape=(200,200,3))(x)
 x = Convolution2D(24, (5,5), strides=(2,2), activation='elu', name='conv1', input_shape=(h, w, d))(x)
 x = Convolution2D(32, (5,5), strides=(2,2), activation='elu', name='conv2', input_shape=(h, w, d))(x)
 x = Convolution2D(64, (5,5), strides=(2,2), activation='elu', name='conv3', input_shape=(h, w, d))(x)
@@ -111,7 +64,7 @@ layers_strides = {5: [1, 1, 1, 1], 4: [1, 1, 1, 1], 3: [1, 2, 2, 1], 2: [1, 2, 2
 
 def compute_visualisation_mask(img):
     activations = functor([np.array([img])])
-    upscaled_activation = np.ones((23,33))       # Change Values Here!
+    upscaled_activation = np.ones((13,13))       # Change Values Here!
     for layer in [5, 4, 3, 2, 1]:
         averaged_activation = np.mean(activations[layer], axis=3).squeeze(axis=0) * upscaled_activation
         output_shape = (activations[layer - 1].shape[1], activations[layer - 1].shape[2])
@@ -133,7 +86,7 @@ def compute_visualisation_mask(img):
     return (final_visualisation_mask - np.min(final_visualisation_mask))/(np.max(final_visualisation_mask) - np.min(final_visualisation_mask))
 
 def plot_movie_mp4(image_array):
-    dpi = 100.0
+    dpi = 70.0
     xpixels, ypixels = image_array[0].shape[0], image_array[0].shape[1]
     fig = plt.figure(figsize=(ypixels/dpi, xpixels/dpi), dpi=dpi)
     im = plt.figimage(image_array[0])
@@ -143,7 +96,7 @@ def plot_movie_mp4(image_array):
 
     anim = animation.FuncAnimation(fig, animate, frames=len(image_array))
     display(HTML(anim.to_html5_video()))
-    anim.save('animation.mp4', writer='imagemagick', fps=40)
+    anim.save('/home/jesse/Desktop/animation.mp4', writer='imagemagick', fps=40)
 
 imgs = []
 alpha = 0.005
@@ -153,10 +106,8 @@ img_stack = []
 z = []
 for path in sorted(iglob('/home/jesse/Desktop/Cropped_Dataset/image_set/*.png'), key=os.path.getmtime):
     img = cv2.imread(path)
-    #mask = cv2.imread('/home/jesse/Desktop/DNRacing/CNN_Model/overlay.png',0)
-    #img = cv2.bitwise_and(img,img,mask = mask)
     img = img[225:285, 230:445]
-    img = cv2.resize(img, (160, 120), interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, (157, 157), interpolation=cv2.INTER_CUBIC)
     if counter == 1:
     	cv2.imshow(str(img.shape), img)
     	cv2.waitKey(1000)

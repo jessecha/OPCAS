@@ -1,14 +1,12 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
 import argparse
 import numpy as np
 import cv2
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
-#config.gpu_options.per_process_gpu_memory_fraction = 0.95 
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 import pickle
@@ -17,12 +15,10 @@ import cv2
 import numpy as np
 import time
 import pandas as pd
-
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from keras.models import Sequential
-from keras.layers import Flatten, Activation, Dense,\
-                         Dropout, MaxPooling3D, Conv3D
+from keras.layers import Flatten, Activation, Dense, Dropout, MaxPooling3D, Conv3D
 from keras import optimizers
 from keras import regularizers
 from keras.layers.normalization import BatchNormalization
@@ -30,14 +26,13 @@ from keras.layers.noise import AlphaDropout
 from keras import callbacks
 from sklearn.externals import joblib
 import matplotlib.pyplot as plt
-import data_processing_v2
-from model import build_3d_cnn
+from data_utils.data_processor import load_dataset
+from model.models import build_3d_cnn
 from model_test_utils.metrics import mean_absolute_relative_error
 from model_test_utils.metrics import coefficient_of_determination
 from keras.layers.advanced_activations import ELU
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 import tensorflow as tf
-
 from tensorflow.python.client import device_lib
 print(device_lib.list_local_devices())
 
@@ -97,7 +92,7 @@ def main(*args, **kwargs):
         model_y_val = model.predict(val_x, batch_size=None, verbose=0)
         model_y = model.predict(test_x, batch_size=None, verbose=0)
 
-    # train result
+        # train result
     if kwargs['mode'] == 'train':
         print(history.history.keys())
         # summarize history for accuracy
@@ -117,8 +112,8 @@ def main(*args, **kwargs):
         plt.xlabel('epoch')
         plt.legend(['train', 'val'], loc='upper left')
         plt.show()
-       
-    # val result
+
+        # val result
     attrs = ['steering', 'throttle']
     for i in range(2):
         mare = mean_absolute_relative_error(val_y[:,i], model_y_val[:,i])
@@ -132,9 +127,7 @@ def main(*args, **kwargs):
             kwargs['n_stacked'], kwargs['n_jump'], kwargs['depth'])
     csvdata.to_csv(result_file_name)
     print('val result saved')
-
-
-    # test result
+        # test result
     attrs = ['steering', 'throttle']
     for i in range(2):
         mare = mean_absolute_relative_error(test_y[:,i], model_y[:,i])
@@ -159,7 +152,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--n_stacked", help="# of stacked frame for time axis",
-        type=int, default=2
+        type=int, default=3
     )
     parser.add_argument(
         "--n_jump", help="time interval to get input, 0 for n_jump=n_stacked",
@@ -167,11 +160,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=320
+        type=int, default=160
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=240
+        type=int, default=160
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
@@ -183,7 +176,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--out_path", help="target csv filename",
-        type=str, default="trainingset_v5.csv"
+        type=str, default="trainingset.csv"
     )
     parser.add_argument(
         "--epochs", help="total number of training epochs",

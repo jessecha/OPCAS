@@ -42,14 +42,8 @@ import argparse
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 from tensorflow.python.util import nest
-# Custom Code
-#import data_processing_v2
-from model import build_cnn
-#from model_test_utils.metrics import mean_absolute_relative_error
-#from model_test_utils.metrics import coefficient_of_determination
-
+from model.models import build_3d_cnn
 config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
-#config.gpu_options.per_process_gpu_memory_fraction = 0.95 
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
@@ -58,26 +52,19 @@ print(device_lib.list_local_devices())
 bridge = CvBridge()
 print("start AI!")
 global length_of_stacked_images
-length_of_stacked_images = 1
+length_of_stacked_images = 3
 global length_of_jump
 length_of_jump = 1
 global width_of_downsize
-width_of_downsize = 320
+width_of_downsize = 160
 global height_of_downsize
-height_of_downsize =240
+height_of_downsize =160
 global image_topic
 image_topic = "/image_topic"
-global stddevthrottle
-stddevthrottle = 0.0412072677
-global stddevsteering
-stddevsteering = 0.039548534475
-global avgthrottle
-avgthrottle = 1.46161837245
-global avgsteering
-avgsteering = 0.760359593594
 global shift
 shift = 1
 global img
+img = []
 global img_stack
 img_stack = []
 global aimode
@@ -89,65 +76,44 @@ global steeringangle
 
 def deploy_dataset(stacked_counter):
 	x = []
-	img_stack = []
-	cv2_img = rospy.wait_for_message(image_topic, ImageMsg, timeout=None)
-	img = (bridge.imgmsg_to_cv2(cv2_img, "bgr8"))
-	img = img[:,:,:]
-	img = cv2.resize(img,(640, 480), interpolation = cv2.INTER_AREA)
-        		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
-	#img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = img[210:500, 70:570]
-        img = cv2.resize(img, (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
-	#imgplot = plt.imshow(img)
-	#plt.show()
-			#img = cv2.cvtColor(img[i],cv2.COLOR_BGR2HSV)
-        		#lower_green = np.array([50,100,50])
-        		#upper_green = np.array([75,255,230])
-        		# Threshold the HSV image to get only green colors
-        		#mask = cv2.inRange(img, lower_green, upper_green)
-        		#img[i] = cv2.bitwise_and(img[i],img[i],mask = mask)
-           		#img[i] = cv2.cvtColor(img[i], cv2.COLOR_BGR2GRAY)  # 108 x 108
-            		#img[i] = np.expand_dims(img[i], axis=-1)  # 108 x 108 x 1
-       	img_stack.append(img.astype(np.float32))
-        x.append(np.stack(img_stack))
-        return np.stack(x)  # train_x
-	#if stacked_counter != 0:
-		#for b in range (0, (length_of_stacked_images - length_of_jump)):
-		#	img[b] = img[b+length_of_jump]
-		#	img_stack[b] = img[b].astype(np.float32)
-		#for i in range (0, length_of_jump):
-			#cv2_img = rospy.wait_for_message(image_topic, ImageMsg)
-			#img[i] = bridge.imgmsg_to_cv2(cv2_img, "rgb8")
-        		#img[i] = cv2.imread(os.path.join(path, fname))  # original 640 x 480
-        		#img[i] = img[i][:, :]
-			#img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
-			#img = cv2.cvtColor(img[i],cv2.COLOR_BGR2HSV)
-        		#lower_green = np.array([50,100,50])
-        		#upper_green = np.array([75,255,230])
-        		# Threshold the HSV image to get only green colors
-        		#mask = cv2.inRange(img, lower_green, upper_green)
-        		#img[i] = cv2.bitwise_and(img[i],img[i],mask = mask)
-           		#img[i] = cv2.cvtColor(img[i], cv2.COLOR_BGR2GRAY)  # 108 x 108
-            		#img[i] = np.expand_dims(img[i], axis=-1)  # 108 x 108 x 1
-       		 	#img_stack[length_of_stacked_images - length_of_jump + i] = img[i].astype(np.float32)
-            	#x.append(np.stack(img_stack))
-    		#return np.stack(x)  # train_x
+	if stacked_counter == 0:
+		for i in range (0, length_of_stacked_images):
+			cv2_img = rospy.wait_for_message(image_topic, ImageMsg, timeout = None)
+			img.append(bridge.imgmsg_to_cv2(cv2_img, "bgr8"))
+			img = img[:,:,:]
+			img = cv2.resize(img,(640, 512), interpolation = cv2.INTER_AREA)
+        		img[i] = img[i][210:500, 70:570]
+        		img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
+       		 	img_stack.append(img[i].astype(np.float32))
+            	x.append(np.stack(img_stack))
+    		return np.stack(x)  # train_x
+	if stacked_counter != 0:
+		for b in range (0, (length_of_stacked_images - length_of_jump)):
+			img[b] = img[b+length_of_jump]
+			img_stack[b] = img[b].astype(np.float32)
+		for i in range (0, length_of_jump):
+			cv2_img = rospy.wait_for_message(image_topic, ImageMsg)
+			img[i] = bridge.imgmsg_to_cv2(cv2_img, "bgr8")
+        		img[i] = img[i][:, :]
+			img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
+       		 	img_stack[length_of_stacked_images - length_of_jump + i] = img[i].astype(np.float32)
+            	x.append(np.stack(img_stack))
+    		return np.stack(x)  # train_x
 
 def main(*args, **kwargs):
 	rospy.init_node('image_to_neural_net')
 	global pub
 	global pubtwo
 	global pubthree
-
 	# Set up your subscriber and define its callback
-	# Receive 20 images for the NN model
-	# Get the model output from 20 images 
+	# Receive images for the NN model
+	# Get the model output from images 
 	global stacked_counter
 	stacked_counter = 0
 	global AISTATUS
 	with tf.device('/gpu:0'):
-		model = build_cnn(width_of_downsize, height_of_downsize, 3)
-    		saved_file_name = './model.hdf5'
+		model = build_3d_cnn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
+    		saved_file_name = './3D_CNN.hdf5'
     		model.load_weights(saved_file_name)
 		while True: 
 			# subscribed to joystick inputs on topic "joy"
@@ -155,18 +121,18 @@ def main(*args, **kwargs):
 			# AI_Mode
 			if AISTATUS.axes[1] < 0.4:
 				deploy_x = deploy_dataset(stacked_counter)
-				#stacked_counter = stacked_counter + 1
-   				model_y = model.predict(np.squeeze(deploy_x, axis = 0), batch_size=1, verbose=0)
+				stacked_counter = stacked_counter + 1
+   				model_y = model.predict(deploy_x, batch_size=1, verbose=0)
     				attrs = ['steering', 'throttle'] 
-    				steering = float(model_y[0,0])
-    				throttle = float(model_y[0,1])
+    				steering = float(model_y[0][0])
+    				throttle = float(model_y[0][1])
 				pub = rospy.Publisher('/Steering', UInt16, queue_size=1)	
 				pubtwo = rospy.Publisher('/Throttle', UInt16, queue_size=1)
 				#throttle = throttle*stddevthrottle + avgthrottle - shift
-				throttleposition = (1489 + 20*(throttle))
-				#throttleposition = 1498
+				#throttleposition = (1489 + 100*(throttle))
+				throttleposition = 1510
 				#steering = steering*stddevsteering + avgsteering - shift
-				steeringangle = (103 + 100*((steering)+0.25))
+				steeringangle = (103 + 100*((steering) + 0.25))
 				if steeringangle < 83:
 					steeringangle = 83
 				if steeringangle >127:
@@ -202,23 +168,23 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--n_stacked", help="# of stacked frame for time axis",
-        type=int, default=20
+        type=int, default=3
     )
     parser.add_argument(
         "--n_jump", help="time interval to get input, 0 for n_jump=n_stacked",
-        type=int, default=4
+        type=int, default=1
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=320
+        type=int, default=160
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=240
+        type=int, default=160
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
-        type=int, default=1
+        type=int, default=3
     )
     parser.add_argument(
         "--img_path", help="image directory under dataset/",
