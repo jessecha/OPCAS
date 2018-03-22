@@ -2,7 +2,7 @@
   File:     FinalArduinoCode.ino
   Author:   Jesse Cha
   Time:     2017/02/01
-  Contact:  gotenkscha@gmail.com
+  Contact:  e.cha@cranfield.ac.uk
   License:  GPL
   About:
 
@@ -25,12 +25,21 @@
 #define MOTOR_MAX_PWM 1000 //1792
 #define MOTOR_MIN_PWM 2000 //959
 #define MOTOR_NO_SIGNAL_PWM 1500 //1371
-#define MOTOR_PIN 11
-#define MOTOR_PIN_TWO 10
+#define PIN_STEER 11 
+#define PIN_THROTTLE 10
+#define PIN_BRAKE 9
+#define PIN_TILT 3
+#define PIN_PAN 5
+
 Servo servo;
+Servo pan;
+Servo tilt;
 Servo motor;
-int value = 0;
-int motorplacement = 0;
+Servo reversemotor;
+Servo brake;
+
+int reverse = 0;
+
 ///////////////
 ///// ROS /////
 ///////////////
@@ -42,18 +51,26 @@ ros::NodeHandle nh ;
 // Send throttle //
 ///////////////////
 std_msgs::UInt16 throttle;
-ros::Publisher Get_ESP_Throttle_publisher("Get_ESP_Throttletwo", &throttle);
+ros::Publisher Get_ESP_Throttle_publisher("Throttle", &throttle);
 
 ///////////////////
 //Calibrate Servo//
 ///////////////////
 
-void servo_cb(const std_msgs::UInt16 &smd_msg) {
-
-  servo.write(smd_msg.data); //set servo angle
-  digitalWrite(12, HIGH - digitalRead(12)); //toggle led
+void steering(const std_msgs::UInt16 &smd_msgone) {
+  servo.write(smd_msgone.data); //set servo angle
 }
-ros::Subscriber<std_msgs::UInt16> sub("servotwo", servo_cb);
+ros::Subscriber<std_msgs::UInt16> subone("Steering", steering);
+
+void headtracking_pan(const std_msgs::UInt16 &smd_msgtwo) {
+  pan.write(smd_msgtwo.data); //set servo angle
+}
+ros::Subscriber<std_msgs::UInt16> subtwo("Set_Pan", headtracking_pan);
+
+void headtracking_tilt(const std_msgs::UInt16 &smd_msgthree) {
+  tilt.write(smd_msgthree.data); //set servo angle
+}
+ros::Subscriber<std_msgs::UInt16> subthree("Set_Tilt", headtracking_tilt);
 
 ///////////////////
 // Calibrate ESC //
@@ -69,19 +86,21 @@ void ESC_calibration(const std_msgs::Empty &toggle_msg) {
   motor.write(MOTOR_MIN_PWM);
   delay(5000);
 }
-ros::Subscriber<std_msgs::Empty> Calibrate_ESP_subscriber("Calibrate_ESPtwo", ESC_calibration);
+ros::Subscriber<std_msgs::Empty> Calibrate_ESP_subscriber("Throttle_Calibration", ESC_calibration);
 
 
 //////////////////
 // Set throttle //
 //////////////////
-void ESC_control( const std_msgs::UInt16 &cmd_msg) {
-  //int PWM = map(cmd_msg.data, 0, 5000, MOTOR_MIN_PWM, MOTOR_MAX_PWM);
-  //motor.write(PWM);
-  motor.write(cmd_msg.data);
+void ESC_control( const std_msgs::UInt16 &cmd_msg_one) {
+  motor.write(cmd_msg_one.data);
 }
-ros::Subscriber<std_msgs::UInt16> Set_ESP_Throttle_subscriber("Set_ESP_Throttletwo", ESC_control);
+ros::Subscriber<std_msgs::UInt16> Set_ESP_Throttle_subscriber("Throttle", ESC_control);
 
+void ESC_reverse_control( const std_msgs::UInt16 &cmd_msg_two) {
+  reversemotor.write(cmd_msg_two.data);
+}
+ros::Subscriber<std_msgs::UInt16> Set_ESP_Brake_subscriber("Braking", ESC_reverse_control);
 
 
 void setup() {
@@ -100,52 +119,47 @@ void setup() {
   ///////////////
   //ESC Arming///
   ///////////////
-  motor.attach(MOTOR_PIN);
+  motor.attach(PIN_THROTTLE);
   motor.write(MOTOR_MIN_PWM);
-  motor.write(1492);
+  motor.write(1480);
   delay(500);
-  motor.write(1493);
+  motor.write(1481);
   delay(500);
-  motor.write(1494);
+  motor.write(1482);
   delay(500);
-  motor.write(1495);
+  motor.write(1483);
   delay(500);
-  motor.write(1496);
+  motor.write(1484);
   delay(500);
-  motor.write(1497);
+  motor.write(1485);
   delay(500);
 
 }
 
 void loop() {
   while (true) {
-    ///////////////
-    ///// ROS /////
-    ///////////////
-    // Update every topic in both directions
-    ///////////////
-    ///// ESC /////
-    ///////////////
     nh.spinOnce();
-    throttle.data = motor.read();
-    if (motorplacement != 0)
+    reverse = reversemotor.read();
+    if (reverse > 1490)
     {
-      throttle.data = motorplacement;
+      throttle.data = motor.read();
     }
     else
     {
-      throttle.data = 1502;
-    }
-    motorplacement = 0;
-    delay(10);
+      throttle.data = reversemotor.read();
+    }    
+    nh.subscribe(subone);
     
-    ///////////////
-    //// servo ////
-    ///////////////
-    servo.attach(MOTOR_PIN_TWO);
-    nh.subscribe(sub);
-
-
+    nh.subscribe(subtwo);
+  
+    nh.subscribe(subthree);
+    
+    servo.attach(PIN_STEER);
+    
+    pan.attach(PIN_PAN);
+    servo.attach(PIN_STEER);
+    tilt.attach(PIN_TILT);
+    servo.attach(PIN_STEER);
   }
 }
 
