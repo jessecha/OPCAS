@@ -25,8 +25,8 @@
 #define MOTOR_MAX_PWM 1000 //1792
 #define MOTOR_MIN_PWM 2000 //959
 #define MOTOR_NO_SIGNAL_PWM 1500 //1371
-#define MOTOR_PIN 12
-#define MOTOR_PIN_TWO 13
+#define MOTOR_PIN 11
+#define MOTOR_PIN_TWO 10
 Servo servo;
 Servo motor;
 int value = 0;
@@ -102,17 +102,17 @@ void setup() {
   ///////////////
   motor.attach(MOTOR_PIN);
   motor.write(MOTOR_MIN_PWM);
-  motor.write(1480);
+  motor.write(1492);
   delay(500);
-  motor.write(1481);
+  motor.write(1493);
   delay(500);
-  motor.write(1482);
+  motor.write(1494);
   delay(500);
-  motor.write(1483);
+  motor.write(1495);
   delay(500);
-  motor.write(1484);
+  motor.write(1496);
   delay(500);
-  motor.write(1485);
+  motor.write(1497);
   delay(500);
 
 }

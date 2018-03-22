@@ -49,7 +49,7 @@ def build_2d_cnn(w, h, d):
     model.summary()
     return model
 
-def build_lrcn(w,h,d,s):
+def build_lrcn(w, h, d, s):
     model = Sequential()
     model.add(TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=(s,h,w,d)))
     model.add(TimeDistributed(Convolution2D(filters=24, kernel_size=(5, 5),

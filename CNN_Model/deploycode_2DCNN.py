@@ -106,6 +106,7 @@ def main(*args, **kwargs):
 		model = build_2d_cnn(width_of_downsize, height_of_downsize, 3)
     		saved_file_name = './2D_CNN.hdf5'
     		model.load_weights(saved_file_name)
+		throttler = 0
 		while True: 
 			# subscribed to joystick inputs on topic "joy"
 			AISTATUS = rospy.wait_for_message('/controller_two', Joy, 1)
@@ -120,7 +121,12 @@ def main(*args, **kwargs):
 				pub = rospy.Publisher('/Steering', UInt16, queue_size=1)	
 				pubtwo = rospy.Publisher('/Throttle', UInt16, queue_size=1)
 				#throttle = throttle*stddevthrottle + avgthrottle - shift
-				throttleposition = (1489 + 20*(throttle))
+				if throttler < 2:
+					throttleposition = 1510
+					throttler = throttler + 1
+				if throttler == 2:
+					throttleposition = 1489
+					throttler = 0
 				#throttleposition = 1498
 				#steering = steering*stddevsteering + avgsteering - shift
 				steeringangle = (103 + 100*((steering)+0.25))

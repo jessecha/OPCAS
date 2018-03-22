@@ -142,7 +142,7 @@ class ImageCreator():
 		                cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
 				cv_image = cv_image[:,:,:]
                                 height, width, channels = cv_image.shape 
-				cv_image = cv2.resize(cv_image,(640, 480), interpolation = cv2.INTER_AREA)
+				cv_image = cv2.resize(cv_image,(640, 512), interpolation = cv2.INTER_AREA)
 		            except CvBridgeError, e:
 		                print e
 		            timestr = str(datetime.fromtimestamp(time.to_time()).strftime('%Y/%m/%d/%H:%M:%S.%f'))

@@ -42,7 +42,7 @@ import argparse
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 from tensorflow.python.util import nest
-from model.models import build_3d_cnn
+from model.models import build_lrcn
 config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'GPU' : 1})
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
@@ -76,30 +76,18 @@ global steeringangle
 
 def deploy_dataset(stacked_counter):
 	x = []
-	if stacked_counter == 0:
-		for i in range (0, length_of_stacked_images):
-			cv2_img = rospy.wait_for_message(image_topic, ImageMsg, timeout = None)
-			img.append(bridge.imgmsg_to_cv2(cv2_img, "bgr8"))
-			img = img[:,:,:]
-			img = cv2.resize(img,(640, 512), interpolation = cv2.INTER_AREA)
-        		img[i] = img[i][210:500, 70:570]
-        		img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
-       		 	img_stack.append(img[i].astype(np.float32))
-            	x.append(np.stack(img_stack))
-    		return np.stack(x)  # train_x
-	if stacked_counter != 0:
-		for b in range (0, (length_of_stacked_images - length_of_jump)):
-			img[b] = img[b+length_of_jump]
-			img_stack[b] = img[b].astype(np.float32)
-		for i in range (0, length_of_jump):
-			cv2_img = rospy.wait_for_message(image_topic, ImageMsg)
-			img[i] = bridge.imgmsg_to_cv2(cv2_img, "bgr8")
-        		img[i] = img[i][:, :]
-			img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
-       		 	img_stack[length_of_stacked_images - length_of_jump + i] = img[i].astype(np.float32)
-            	x.append(np.stack(img_stack))
-    		return np.stack(x)  # train_x
-
+        img = []
+        img_stack = []
+	for i in range (0, length_of_stacked_images):
+		cv2_img = rospy.wait_for_message(image_topic, ImageMsg, timeout = None)
+		img.append(bridge.imgmsg_to_cv2(cv2_img, "bgr8"))
+		img[i] = cv2.resize(img[i],(640, 512), interpolation = cv2.INTER_AREA)
+        	img[i] = img[i][210:500, 70:570]
+        	img[i] = cv2.resize(img[i], (width_of_downsize, height_of_downsize), interpolation=cv2.INTER_CUBIC)  
+       		img_stack.append(img[i].astype(np.float32))
+        x.append(np.stack(img_stack))
+    	return np.stack(x)  # train_x
+	
 def main(*args, **kwargs):
 	rospy.init_node('image_to_neural_net')
 	global pub
@@ -112,9 +100,13 @@ def main(*args, **kwargs):
 	stacked_counter = 0
 	global AISTATUS
 	with tf.device('/gpu:0'):
+		print("loading")
 		model = build_lrcn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
+
     		saved_file_name = './LRCN.hdf5'
     		model.load_weights(saved_file_name)
+		print("loaded")
+		throttler = 0
 		while True: 
 			# subscribed to joystick inputs on topic "joy"
 			AISTATUS = rospy.wait_for_message('/controller_two', Joy, 1)
@@ -130,7 +122,12 @@ def main(*args, **kwargs):
 				pubtwo = rospy.Publisher('/Throttle', UInt16, queue_size=1)
 				#throttle = throttle*stddevthrottle + avgthrottle - shift
 				#throttleposition = (1489 + 100*(throttle))
-				throttleposition = 1510
+				if throttler < 2:
+					throttleposition = 1510# + 100*(throttle)
+					throttler = throttler + 1
+				if throttler == 2:
+					throttleposition = 1489
+					throttler = 0	
 				#steering = steering*stddevsteering + avgsteering - shift
 				steeringangle = (103 + 100*((steering) + 0.25))
 				if steeringangle < 83:
