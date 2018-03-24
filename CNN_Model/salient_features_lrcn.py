@@ -35,7 +35,7 @@ set_session(tf.Session(config=config))
 global n_stacked
 n_stacked = 3
 
-model = build_lrcn(w=100, h=100, d=3, s=3)
+model = build_lrcn(w=104, h=104, d=3, s=3)
 model.load_weights('LRCN.hdf5')
 
 img_in = Input(shape=(3, 100, 100, 3), name='img_in')
@@ -143,7 +143,7 @@ for a in range(quarterlength):
 	for b in range(n_stacked):	
 	    img = cv2.imread('/home/jesse/Desktop/Uncropped_Dataset/image_set/'+ str(number) + '.png')	
 	    img = img[210:500, 70:570]
-	    img = cv2.resize(img, (100, 100), interpolation=cv2.INTER_CUBIC)
+	    img = cv2.resize(img, (104, 104), interpolation=cv2.INTER_CUBIC)
 	    img_stack.append(img.astype(np.float32))
 	    display_img_stack.append(img.astype(np.float32))
 	    number = number + 1	
@@ -160,7 +160,7 @@ for a in range(quarterlength):
     		temp_img = cv2.imread('/home/jesse/Desktop/Uncropped_Dataset/image_set/'+ str(numbertwo) + '.png')	
 		numbertwo = numbertwo + 1
 	        temp_img = temp_img[210:500, 70:570]
-	        temp_img = cv2.resize(temp_img, (100, 100), interpolation=cv2.INTER_CUBIC)
+	        temp_img = cv2.resize(temp_img, (104, 104), interpolation=cv2.INTER_CUBIC)
 		temp_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB)
 		salient_masked_one = salient_mask[0,:,:]
 		salient_masked_two = salient_mask[1,:,:]

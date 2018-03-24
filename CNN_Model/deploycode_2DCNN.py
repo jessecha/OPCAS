@@ -56,19 +56,11 @@ length_of_stacked_images = 1
 global length_of_jump
 length_of_jump = 1
 global width_of_downsize
-width_of_downsize = 100
+width_of_downsize = 104
 global height_of_downsize
-height_of_downsize =100
+height_of_downsize =104
 global image_topic
 image_topic = "/image_topic"
-global stddevthrottle
-stddevthrottle = 0.0412072677
-global stddevsteering
-stddevsteering = 0.039548534475
-global avgthrottle
-avgthrottle = 1.46161837245
-global avgsteering
-avgsteering = 0.760359593594
 global shift
 shift = 1
 global img
@@ -173,11 +165,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=100
+        type=int, default=104
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=100
+        type=int, default=104
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",

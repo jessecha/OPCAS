@@ -23,12 +23,12 @@ config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'G
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
-model = build_2d_cnn(w=100, h=100, d=3)
+model = build_2d_cnn(w=104, h=104, d=3)
 model.load_weights('2DCNN.hdf5')
 
-img_in = Input(shape=(100, 100, 3), name='img_in')
-h = 100
-w = 100
+img_in = Input(shape=(104, 104, 3), name='img_in')
+h = 104
+w = 104
 d = 3
 x = img_in
 x = Convolution2D(24, (5,5), strides=(2,2), activation='elu', name='conv1', input_shape=(h, w, d))(x)
@@ -107,7 +107,7 @@ z = []
 for path in sorted(iglob('/home/jesse/Desktop/Uncropped_Dataset/image_set/*.png'), key=os.path.getmtime):
     img = cv2.imread(path)
     img = img[210:500, 70:570]
-    img = cv2.resize(img, (100, 100), interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, (104, 104), interpolation=cv2.INTER_CUBIC)
     if counter == 1:
     	cv2.imshow(str(img.shape), img)
     	cv2.waitKey(1000)
