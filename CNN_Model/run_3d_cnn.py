@@ -51,7 +51,7 @@ def main(*args, **kwargs):
     out_path = os.path.join(kwargs['out_path'])
     n_stacked = kwargs['n_stacked']
 
-    train_x, val_x, test_x, train_y, val_y, test_y = data_processing_v2.load_dataset(
+    train_x, val_x, test_x, train_y, val_y, test_y = load_dataset(
         n_stacked, img_path, out_path,
         h=kwargs['height'], w=kwargs['width'], d=kwargs['depth'],
         val_size=0.1, test_size=0.1,
@@ -160,23 +160,23 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=160
+        type=int, default=100
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=160
+        type=int, default=100
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
         type=int, default=3
     )
     parser.add_argument(
-        "--img_path", help="image directory under dataset/",
-        type=str, default='t1'
+        "--img_path", help="image directory",
+        type=str, default='/home/jesse/Desktop/Uncropped_Dataset/image_set'
     )
     parser.add_argument(
         "--out_path", help="target csv filename",
-        type=str, default="trainingset.csv"
+        type=str, default='/home/jesse/Desktop/Uncropped_Dataset/training_dataset.csv'
     )
     parser.add_argument(
         "--epochs", help="total number of training epochs",

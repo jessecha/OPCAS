@@ -23,12 +23,12 @@ config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'G
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
-model = build_2d_cnn(w=157, h=157, d=3)
-model.load_weights('2D_CNN.hdf5')
+model = build_2d_cnn(w=100, h=100, d=3)
+model.load_weights('2DCNN.hdf5')
 
-img_in = Input(shape=(157, 157, 3), name='img_in')
-h = 157
-w = 157
+img_in = Input(shape=(100, 100, 3), name='img_in')
+h = 100
+w = 100
 d = 3
 x = img_in
 x = Convolution2D(24, (5,5), strides=(2,2), activation='elu', name='conv1', input_shape=(h, w, d))(x)
@@ -64,7 +64,7 @@ layers_strides = {5: [1, 1, 1, 1], 4: [1, 1, 1, 1], 3: [1, 2, 2, 1], 2: [1, 2, 2
 
 def compute_visualisation_mask(img):
     activations = functor([np.array([img])])
-    upscaled_activation = np.ones((13,13))       # Change Values Here!
+    upscaled_activation = np.ones((5,5))       # Change Values Here!
     for layer in [5, 4, 3, 2, 1]:
         averaged_activation = np.mean(activations[layer], axis=3).squeeze(axis=0) * upscaled_activation
         output_shape = (activations[layer - 1].shape[1], activations[layer - 1].shape[2])
@@ -104,10 +104,10 @@ beta = 1.0 - alpha
 counter = 0
 img_stack = []
 z = []
-for path in sorted(iglob('/home/jesse/Desktop/Cropped_Dataset/image_set/*.png'), key=os.path.getmtime):
+for path in sorted(iglob('/home/jesse/Desktop/Uncropped_Dataset/image_set/*.png'), key=os.path.getmtime):
     img = cv2.imread(path)
-    img = img[225:285, 230:445]
-    img = cv2.resize(img, (157, 157), interpolation=cv2.INTER_CUBIC)
+    img = img[210:500, 70:570]
+    img = cv2.resize(img, (100, 100), interpolation=cv2.INTER_CUBIC)
     if counter == 1:
     	cv2.imshow(str(img.shape), img)
     	cv2.waitKey(1000)

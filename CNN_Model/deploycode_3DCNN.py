@@ -56,9 +56,9 @@ length_of_stacked_images = 3
 global length_of_jump
 length_of_jump = 1
 global width_of_downsize
-width_of_downsize = 160
+width_of_downsize = 100
 global height_of_downsize
-height_of_downsize =160
+height_of_downsize =100
 global image_topic
 image_topic = "/image_topic"
 global shift
@@ -97,7 +97,7 @@ def main(*args, **kwargs):
 	global AISTATUS
 	with tf.device('/gpu:0'):
 		model = build_3d_cnn(width_of_downsize, height_of_downsize, 3, length_of_stacked_images)
-    		saved_file_name = './3D_CNN.hdf5'
+    		saved_file_name = './3DCNN.hdf5'
     		model.load_weights(saved_file_name)
 		throttler = 0
 		while True: 
@@ -166,11 +166,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=160
+        type=int, default=100
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=160
+        type=int, default=100
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
