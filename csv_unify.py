@@ -35,14 +35,14 @@ timestamptwo = []
 global timestampthree 
 timestampthree = []
 global startnumber
-startnumber = 14016
+startnumber = 646
 global finishnumber
-finishnumber = 47102
+finishnumber = 22286
 global timestamprate 
 timestamprate = 0.025
 print("Starting joy data extraction...")
-with open('controller.csv') as csvfilesix:
-	reader = csv.DictReader(csvfilesix)
+with open('controller.csv') as csvfileone:
+	reader = csv.DictReader(csvfileone)
 	nsecs = []
 	secs = []
 	realtime = []
@@ -149,6 +149,68 @@ with open('controller.csv') as csvfilesix:
 			servo_position[e] = float(servo_position[e])
 			throttle_position[e] = float(throttle_position[e])
 
+print("Starting button data extraction...")
+with open('controller_two.csv') as csvfiletwo:
+	readerbutton = csv.DictReader(csvfiletwo)
+	buttonraw = []
+        button = []
+	button_split = []
+	button_position = []
+	timebutton = []
+	realtimethree = []
+	timestampthree = []
+	hourthree = []
+	minutethree = []
+	secondthree = []
+	nanosecondthree = []
+
+	for row in readerbutton:  
+                timebutton.append(row['time'])
+		buttonraw.append(row['.axes'])
+	button.append("empty")
+
+        for a in range(len(timebutton)): 
+		if timebutton[a] != "time": 
+                        realtimethree.append("empty")   
+			timeonebutton = timebutton[a].split(":")
+			timetwobutton = timeonebutton[2].split(".")
+			timethreebutton = timeonebutton[0].split("/")
+			timefourbutton = timetwobutton[1].split("\n")
+			hourthree.append(timethreebutton[3])
+			minutethree.append(timeonebutton[1])
+			secondthree.append(timetwobutton[0])
+			nanosecondthree.append(timefourbutton[0][:3])
+			button.append(buttonraw[a])
+
+	for g in range(len(button)):
+		if button[g] != "empty":
+			button_split = button[g].strip().split(',')
+			button[g] = button_split[0][1:]
+
+	for a in range(len(hourthree)):
+		realtimethree[a] = (float(hourthree[a])*60*60 + float(minutethree[a])*60 + float(secondthree[a]) + 0.001*float(nanosecondthree[a]))
+		timestampthree.append(realtimethree[a])
+
+	for d in range(total_time):
+		button_position.append("empty")
+	
+        print("starting nested for loops...")
+	for c in range(len(timestamp)):
+		for y in range(total_time):	
+			if (((timetable[y] + timestamprate) > timestamp[c]) and (timetable[y] < timestamp[c])):
+			        button_position[y] = float(str((float(button[c])))[:7])
+		print(str(c/float(len(timestamp))*100) + "% complete...")
+	print("finished...")
+	for e in range(total_time): 
+		if button_position[e] == "empty":
+			a = 1;
+			while button_position[e-a] == "empty":
+				a = a + 1;
+			button_position[e] = button_position[e-a]
+
+        for e in range(total_time): 
+			button_position[e] = float(button_position[e])
+
 print("Starting camera image extraction...")
 with open('cameraimages.csv') as csvfilethree:
 	readercamera = csv.DictReader(csvfilethree)
@@ -228,23 +290,34 @@ plt.close()
 
 # determine keep probability for each bin: if below avg_samples_per_bin, keep all; otherwise keep prob is proportional
 # to number of samples above the average, so as to bring the number of samples for that bin down to the average
-keep_probs = []
-target = avg_samples_per_bin * .3
-for i in range(num_bins):
-	if hist[i] <= target:
-        	keep_probs.append(1.)
-	else:
-		keep_probs.append(float(target/hist[i]))
-remove_list = []
-for i in range(len(servo_position)):
-	for j in range(num_bins):
-		if servo_position[i] > bins[j] and servo_position[i] <= bins[j+1]:
+#keep_probs = []
+#target = avg_samples_per_bin * .3
+#for i in range(num_bins):
+#	if hist[i] <= target:
+#        	keep_probs.append(1.)
+#	else:
+#		keep_probs.append(float(target/hist[i]))
+#remove_list = []
+#for i in range(len(servo_position)):
+#	for j in range(num_bins):
+#		if servo_position[i] > bins[j] and servo_position[i] <= bins[j+1]:
 # delete from X and y with probability 1 - keep_probs[j]
-			if np.random.rand() > keep_probs[j]:
-				remove_list.append(i)
-camera_image = np.delete(camera_image, remove_list)
-servo_position = np.delete(servo_position, remove_list)
-throttle_position = np.delete(throttle_position, remove_list)
+#			if np.random.rand() > keep_probs[j]:
+#				remove_list.append(i)
+#camera_image = np.delete(camera_image, remove_list)
+#servo_position = np.delete(servo_position, remove_list)
+#throttle_position = np.delete(throttle_position, remove_list)
+#button_position = np.delete(button_position, remove_list)
+
+# Delete values where button is pressed
+remove_list_two = []
+for i in range(len(servo_position)):
+	if button_position[i] < 0.4:
+		remove_list_two.append(i)
+camera_image = np.delete(camera_image, remove_list_two)
+servo_position = np.delete(servo_position, remove_list_two)
+throttle_position = np.delete(throttle_position, remove_list_two)
+button_position = np.delete(button_position, remove_list_two)
 
 # print a histogram to see which steering angle ranges are most overrepresented
 num_bins = 30
@@ -310,7 +383,6 @@ print("Saving the set...")
 print("Steering/Throttle data length is " + str(len(throttle_position)*2))
 print("image data length is " + str(len(camera_image)*2))
 # Save trainingset
-
 # Steer, Throttle values for image flipping
 print("Flipped Image Values...")
 global servo_position_flipped
@@ -323,43 +395,45 @@ for e in range(len(servo_position)):
 	servo_position_flipped.append((servo_position[e] + 0.250) * (-1) - 0.250)
 	throttle_position_flipped.append(throttle_position[e])
         camera_image_flipped.append(camera_image[e])
-
-
 lengthofdata = int(len(throttle_position)) 
 lengthofdatatwo = int(len(throttle_position_flipped))
+imagecounterone = []
+imagecountertwo = []
+
+for a in range(int(lengthofdata)):
+	imagecounterone.append(a+1)
+for b in range(int(lengthofdatatwo)):
+	imagecountertwo.append(len(imagecounterone)+b+1)
+
 with open('training_dataset.csv', 'w+') as csvfiletrain:
-	fieldnames = ['steering', 'throttle', 'N_steering', 'N_throttle', 'image_number']
+	fieldnames = ['steering', 'throttle', 'image_number', 'button_position']
 	writer = csv.DictWriter(csvfiletrain, fieldnames=fieldnames)
 	writer.writeheader()
-	imgcount = 1 #1;
+	imgcount = 1 
 	for a in range(int(lengthofdata)):
-		writer.writerow({'steering': servo_position[a], 'throttle': throttle_position[a], 'image_number': imgcount})
-		path = "/home/nvidia/Desktop/imagefiles/image_set"
-		originalpath = "/home/nvidia/Desktop/imagefiles/image"
+		writer.writerow({'steering': servo_position[a], 'throttle': throttle_position[a], 'image_number': imagecounterone[a], 'button_position': button_position[a]})
+		path = "/home/jesse/Desktop/imagefiles/image_set"
+		originalpath = "/home/jesse/Desktop/imagefiles/image"
 		mylist = os.listdir(originalpath);
-
+               
 		for d in range(len(mylist)):	
-		  	if camera_image[a][38:59] == mylist[d]:
+		  	if camera_image[a][37:58] == mylist[d]:
 				print("Converting..." + str(a+1) + ' out of ' + str(lengthofdata*2))	
-				im = cv2.IMREAD_COLOR(camera_image[a][:59])	
+				im = cv2.imread(str(camera_image[a][:58]))	
 				cv2.imwrite(path + '/' + str(imgcount) + '.png', im)
 				imgcount = imgcount + 1;
 
 	for a in range(int(lengthofdatatwo)):
-		writer.writerow({'steering': servo_position_flipped[a], 'throttle': throttle_position_flipped[a],'image_number': imgcount})
-		path = "/home/nvidia/Desktop/imagefiles/image_set"
-		originalpath = "/home/nvidia/Desktop/imagefiles/image"
+		writer.writerow({'steering': servo_position_flipped[a], 'throttle': throttle_position_flipped[a],'image_number': imagecountertwo[a], 'button_position': button_position[a]})
+		path = "/home/jesse/Desktop/imagefiles/image_set"
+		originalpath = "/home/jesse/Desktop/imagefiles/image"
 		mylist = os.listdir(originalpath);
 		for d in range(len(mylist)):	
-		  	if camera_image_flipped[a][38:59] == mylist[d]:
+		  	if camera_image_flipped[a][37:58] == mylist[d]:
 				print("Converting..." + str(lengthofdata+a+1) + ' out of ' + str(lengthofdatatwo*2))
-				im = cv2.IMREAD_COLOR(camera_image_flipped[a][:59])
+				im = cv2.imread(str(camera_image_flipped[a][:58]))
 				horizontal_im = cv2.flip(im, 0)	
 				cv2.imwrite(path + '/' + str(imgcount) + '.png', horizontal_im)		
-				#im = Image.open(camera_image_flipped[a][:59])
-				#rgb_im = im.convert('RGB')
-				#rgb_im = rgb_im.transpose(Image.FLIP_LEFT_RIGHT)
-				#rgb_im.save(path + '/' + str(imgcount) + '.png')
 				imgcount = imgcount + 1;
 		
 
