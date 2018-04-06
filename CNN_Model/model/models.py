@@ -53,19 +53,19 @@ def build_lrcn(w, h, d, s):
     model = Sequential()
     model.add(TimeDistributed(Lambda(lambda x: x/127.5 - 1.0), input_shape=(s,h,w,d)))
     model.add(TimeDistributed(Convolution2D(filters=24, kernel_size=(5, 5),
-        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv1')))
+        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu'), name = 'conv1'))
     #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
     model.add(TimeDistributed(Convolution2D(filters=32, kernel_size=(5, 5),
-        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv2')))
+        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu'), name = 'conv2'))
     #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
     model.add(TimeDistributed(Convolution2D(filters=64, kernel_size=(5, 5),
-        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv3')))
+        strides=(2,2),data_format='channels_last', input_shape=(h, w, d), activation='elu'), name = 'conv3'))
     #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
     model.add(TimeDistributed(Convolution2D(filters=64, kernel_size=(3, 3),
-        strides=(1,1),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv4')))
+        strides=(1,1),data_format='channels_last', input_shape=(h, w, d), activation='elu'), name = 'conv4'))
     #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
     model.add(TimeDistributed(Convolution2D(filters=64, kernel_size=(3, 3),
-        strides=(1,1),data_format='channels_last', input_shape=(h, w, d), activation='elu', name = 'conv5')))
+        strides=(1,1),data_format='channels_last', input_shape=(h, w, d), activation='elu'), name = 'conv5'))
     #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
     #model.add(Convolution2D(filters=64, kernel_size=(3, 3),
     #    strides=(3,3),data_format='channels_last', border_mode='same',

@@ -160,11 +160,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=104
+        type=int, default=157
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=104
+        type=int, default=157
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
@@ -172,11 +172,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--img_path", help="image directory",
-        type=str, default='/home/jesse/Desktop/Uncropped_Dataset/image_set'
+        type=str, default='/home/jesse/Desktop/imagefiles/image_set'
     )
     parser.add_argument(
         "--out_path", help="target csv filename",
-        type=str, default='/home/jesse/Desktop/Uncropped_Dataset/training_dataset.csv'
+        type=str, default='/home/jesse/Desktop/training_dataset.csv'
     )
     parser.add_argument(
         "--epochs", help="total number of training epochs",

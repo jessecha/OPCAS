@@ -30,7 +30,7 @@ def load_x_dataset(n_stacked, path, n_jump=None, w=157, h=157, d=3):
     print("image processing (resizing, cropping)")
     for i, fname in tqdm(enumerate(fnames), total=len(fnames), leave=False):
         img = cv2.imread(os.path.join(path, fname))  
-        img = img[210:500, 70:570]
+        img = img[200:500, 70:570]
         img = cv2.resize(img, (w, h), interpolation=cv2.INTER_CUBIC)  
         if i == 100:
             cv2.imshow(str(img.shape), img)

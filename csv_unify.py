@@ -35,9 +35,9 @@ timestamptwo = []
 global timestampthree 
 timestampthree = []
 global startnumber
-startnumber = 646
+startnumber = 328
 global finishnumber
-finishnumber = 22286
+finishnumber = 17462
 global timestamprate 
 timestamprate = 0.025
 print("Starting joy data extraction...")
@@ -312,7 +312,7 @@ plt.close()
 # Delete values where button is pressed
 remove_list_two = []
 for i in range(len(servo_position)):
-	if button_position[i] < 0.4:
+	if button_position[i] > 0.4:
 		remove_list_two.append(i)
 camera_image = np.delete(camera_image, remove_list_two)
 servo_position = np.delete(servo_position, remove_list_two)

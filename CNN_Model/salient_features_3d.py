@@ -26,10 +26,10 @@ set_session(tf.Session(config=config))
 global n_stacked
 n_stacked = 3
 
-model = build_3d_cnn(w=104, h=104, d=3, s=n_stacked)
+model = build_3d_cnn(w=157, h=157, d=3, s=n_stacked)
 model.load_weights('3DCNN.hdf5')
 
-img_in = Input(shape=(n_stacked, 104, 104, 3), name='img_in')
+img_in = Input(shape=(n_stacked, 157, 157, 3), name='img_in')
 h = 104
 w = 104
 d = 3
@@ -170,15 +170,15 @@ z = []
 number = 1
 numbertwo = 1
 target_image = []
-path, dirs, files = os.walk('/home/jesse/Desktop/Uncropped_Dataset/image_set/').next()
+path, dirs, files = os.walk('/home/jesse/Desktop/imagefiles/image_set/').next()
 length = len(files)
 quarterlength = (length - (length % n_stacked))/n_stacked	
 for a in range(quarterlength):	
 	display_img_stack = []
 	for b in range(n_stacked):	
-	    img = cv2.imread('/home/jesse/Desktop/Uncropped_Dataset/image_set/'+ str(number) + '.png')	
+	    img = cv2.imread('/home/jesse/Desktop/imagefiles/image_set/'+ str(number) + '.png')	
             img = img[210:500, 70:570]
-	    img = cv2.resize(img, (104, 104), interpolation=cv2.INTER_CUBIC)
+	    img = cv2.resize(img, (157, 157), interpolation=cv2.INTER_CUBIC)
 	    img_stack.append(img.astype(np.float32))
 	    display_img_stack.append(img.astype(np.float32))
 	    number = number + 1	
@@ -194,10 +194,10 @@ for a in range(quarterlength):
 	img =  np.stack(img_stack)
 	salient_mask = compute_visualisation_mask(img)
 	for a in range(n_stacked):
-    		temp_img = cv2.imread('/home/jesse/Desktop/Uncropped_Dataset/image_set/'+ str(numbertwo) + '.png')	
+    		temp_img = cv2.imread('/home/jesse/Desktop/imagefiles/image_set/'+ str(numbertwo) + '.png')	
 		numbertwo = numbertwo + 1
 	        temp_img = temp_img[210:500, 70:570]
-	        temp_img = cv2.resize(temp_img, (104, 104), interpolation=cv2.INTER_AREA)
+	        temp_img = cv2.resize(temp_img, (157, 157), interpolation=cv2.INTER_AREA)
 		temp_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB)
 		salient_masked_one = salient_mask[0,:,:]
 		salient_masked_two = salient_mask[1,:,:]
