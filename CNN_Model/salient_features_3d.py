@@ -26,12 +26,12 @@ set_session(tf.Session(config=config))
 global n_stacked
 n_stacked = 3
 
-model = build_3d_cnn(w=157, h=157, d=3, s=n_stacked)
-model.load_weights('3DCNN.hdf5')
+model = build_3d_cnn(w=160, h=160, d=3, s=n_stacked)
+model.load_weights('3DCNN2.hdf5')
 
-img_in = Input(shape=(n_stacked, 157, 157, 3), name='img_in')
-h = 104
-w = 104
+img_in = Input(shape=(n_stacked, 160, 160, 3), name='img_in')
+h = 160
+w = 160
 d = 3
 s = n_stacked
 x = img_in
@@ -114,7 +114,7 @@ layers_strides = {5: [1, 1, 1, 1, 1], 4: [1, 1, 1, 1, 1], 3: [1, 1, 2, 2, 1], 2:
 
 def compute_visualisation_mask(img):
     activations = functor([np.array([img])])	
-    upscaled_activation = np.ones((3,13,13))
+    upscaled_activation = np.ones((3,20,20))
     for layer in [5, 4, 3, 2, 1]:
 	the_layers = np.mean(activations[layer], axis=4).squeeze(axis=0)
 	averaged_activation = the_layers * upscaled_activation
@@ -124,23 +124,23 @@ def compute_visualisation_mask(img):
 	modeltwo = Sequential()
 	if layer == 5:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(3,3,3), strides=(1,1,1),
-		input_shape=(3, 13, 13, 1), data_format='channels_last',
+		input_shape=(3, 20, 20, 1), data_format='channels_last',
                 padding='same'))
 	if layer == 4:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(3,3,3), strides=(1,1,1),
-		input_shape=(3, 13, 13, 1), data_format='channels_last',
+		input_shape=(3, 20, 20, 1), data_format='channels_last',
                 padding='same'))
 	if layer == 3:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(5,5,5), strides=(1,2,2),
-		input_shape=(3, 13, 13, 1), data_format='channels_last',
+		input_shape=(3, 20, 20, 1), data_format='channels_last',
                 padding='same'))
 	if layer == 2:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(5,5,5), strides=(1,2,2),
-		input_shape=(3, 26, 26, 1), data_format='channels_last',
+		input_shape=(3, 40, 40, 1), data_format='channels_last',
                 padding='same'))
 	if layer == 1:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(5,5,5), strides=(1,2,2),
-		input_shape=(3, 52, 52, 1), data_format='channels_last',
+		input_shape=(3, 80, 80, 1), data_format='channels_last',
                 padding='same'))
         result = modeltwo.predict(x)
 	result = result.squeeze(axis=0)
@@ -178,7 +178,7 @@ for a in range(quarterlength):
 	for b in range(n_stacked):	
 	    img = cv2.imread('/home/jesse/Desktop/imagefiles/image_set/'+ str(number) + '.png')	
             img = img[210:500, 70:570]
-	    img = cv2.resize(img, (157, 157), interpolation=cv2.INTER_CUBIC)
+	    img = cv2.resize(img, (160, 160), interpolation=cv2.INTER_CUBIC)
 	    img_stack.append(img.astype(np.float32))
 	    display_img_stack.append(img.astype(np.float32))
 	    number = number + 1	
@@ -197,7 +197,7 @@ for a in range(quarterlength):
     		temp_img = cv2.imread('/home/jesse/Desktop/imagefiles/image_set/'+ str(numbertwo) + '.png')	
 		numbertwo = numbertwo + 1
 	        temp_img = temp_img[210:500, 70:570]
-	        temp_img = cv2.resize(temp_img, (157, 157), interpolation=cv2.INTER_AREA)
+	        temp_img = cv2.resize(temp_img, (160, 160), interpolation=cv2.INTER_AREA)
 		temp_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB)
 		salient_masked_one = salient_mask[0,:,:]
 		salient_masked_two = salient_mask[1,:,:]

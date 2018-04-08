@@ -64,7 +64,7 @@ layers_strides = {5: [1, 1, 1, 1], 4: [1, 1, 1, 1], 3: [1, 2, 2, 1], 2: [1, 2, 2
 
 def compute_visualisation_mask(img):
     activations = functor([np.array([img])])
-    upscaled_activation = np.ones((6,6))       # Change Values Here!
+    upscaled_activation = np.ones((13,13))       # Change Values Here!
     for layer in [5, 4, 3, 2, 1]:
         averaged_activation = np.mean(activations[layer], axis=3).squeeze(axis=0) * upscaled_activation
         output_shape = (activations[layer - 1].shape[1], activations[layer - 1].shape[2])
