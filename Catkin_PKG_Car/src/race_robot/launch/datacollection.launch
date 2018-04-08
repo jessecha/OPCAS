@@ -63,15 +63,5 @@
     <param name="coalesce_interval" value="0.1"/>  
     </node>
 
-    <!-- SteeringWheel: Headtracking -->
-     <node pkg="headtracking"
-        type="joy_node_headtracking"
-        name="joy_node_headtracking"
-        respawn="false">
-    <param name="deadzone" value="0.001" />
-    <param name="autorepeat rate" value="1"/>
-    <param name="coalesce_interval" value="0.01"/>  
-    </node>
-
     
 </launch>
