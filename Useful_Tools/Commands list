@@ -1,17 +1,27 @@
-<DNR Host Startup>
-*Connect all USB ports first!
-sudo gedit ~/.bashrc
+
+<Connection Procedure>
+sudo gedit ~/.bashrc     *Change IP address on ROS IP and ROS MASTER
 source /opt/ros/kinetic/setup.bash
 source ~/catkin_ws/devel/setup.bash
-sudo route add -net 224.0.0.0 netmask 224.0.0.0 wlp4s0
-rosrun master_discovery_fkie master_discovery _mcast_group:=224.0.0.1
-roslaunch dnracing_host DNRacing.launch
+*connect Host PC first!
+rosrun master_discovery_fkie master_discovery  _mcast_group:=224.0.0.1
+sudo chmod 777 /dev/ttyACM0
+roslaunch race_robot sixthtest.launch * For Data Collection
+roslaunch race_robot ai.launch * For AI
+cd Desktop
+python deployai.py * For AI
 rosrun master_sync_fkie master_sync
 
+<Record Rosbag>
+rosbag record controller controller_two camera/left/image_raw
+
+rosbag reindex .bag
+rqt_bag
+rosrun plotjuggler PlotJuggler
 <ROS Data Acquisition>
-cd Desktop/imagefiles
+create imagefiles folder with image folder inside (user permission settings)
 rosrun rosbag_to_csv rosbag_to_csv.py
-roslaunch export.launch
+rosrun bag_converter bag_converter.py
 python csv_unify.py
 
 <Udacity Nanodegree Course HW>

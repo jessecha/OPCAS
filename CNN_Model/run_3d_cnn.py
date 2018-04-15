@@ -54,7 +54,7 @@ def main(*args, **kwargs):
     train_x, val_x, test_x, train_y, val_y, test_y = load_dataset(
         n_stacked, img_path, out_path,
         h=kwargs['height'], w=kwargs['width'], d=kwargs['depth'],
-        val_size=0.1, test_size=0.1,
+        val_size=0.04, test_size=0.04,
         n_jump=kwargs['n_jump']
     )
     print("number of train images:", train_x.shape)
@@ -152,7 +152,7 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--n_stacked", help="# of stacked frame for time axis",
-        type=int, default=3
+        type=int, default=2
     )
     parser.add_argument(
         "--n_jump", help="time interval to get input, 0 for n_jump=n_stacked",
@@ -160,11 +160,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=160
+        type=int, default=70
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=160
+        type=int, default=70
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",

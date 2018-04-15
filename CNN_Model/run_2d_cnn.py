@@ -48,7 +48,7 @@ def main(*args, **kwargs):
     with tf.device('/gpu:0'):
         train_x, val_x, test_x, train_y, val_y, test_y = load_dataset(
 		n_stacked=1,img_path = img_path, out_path=out_path, w=157, h=157, d=3,
-                 val_size=0.1, test_size=0.1, n_jump=None
+                 val_size=0.05, test_size=0.05, n_jump=None
                 )
 	train_x = np.squeeze(train_x)
     	val_x = np.squeeze(val_x)
@@ -122,11 +122,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=157
+        type=int, default=160
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=157
+        type=int, default=160
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",
