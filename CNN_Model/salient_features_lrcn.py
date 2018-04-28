@@ -36,7 +36,7 @@ global n_stacked
 n_stacked = 3
 
 model = build_lrcn(w=157, h=157, d=3, s=3)
-model.load_weights('LRCN.hdf5')
+model.load_weights('lrcn.hdf5')
 
 img_in = Input(shape=(3, 157, 157, 3), name='img_in')
 h = 157
@@ -132,8 +132,8 @@ beta = 1.0 - alpha
 counter = 0
 img_stack = []
 z = []
-number = 1
-numbertwo = 1
+number = 69800
+numbertwo = 69800
 target_image = []
 path, dirs, files = os.walk('/home/jesse/Desktop/imagefiles/image_set/').next()
 length = len(files)

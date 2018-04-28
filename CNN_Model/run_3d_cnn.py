@@ -160,11 +160,11 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         "--width", help="width of input images",
-        type=int, default=70
+        type=int, default=104
     )
     parser.add_argument(
         "--height", help="height of input images",
-        type=int, default=70
+        type=int, default=104
     )
     parser.add_argument(
         "--depth", help="the number of channels of input images",

@@ -35,9 +35,9 @@ timestamptwo = []
 global timestampthree 
 timestampthree = []
 global startnumber
-startnumber = 516
+startnumber = 2040
 global finishnumber
-finishnumber = 5200
+finishnumber = 10960
 global timestamprate 
 timestamprate = 0.04
 print("Starting joy data extraction...")
@@ -195,7 +195,7 @@ with open('Overtaking_controller_two.csv') as csvfiletwo:
 		button_position.append("empty")
 	
         print("starting nested for loops...")
-	for c in range(len(timestamp)):
+	for c in range(len(button)):
 		for y in range(total_time):	
 			if (((timetable[y] + timestamprate) > timestamp[c]) and (timetable[y] < timestamp[c])):
 			        button_position[y] = float(str((float(button[c])))[:7])
@@ -312,7 +312,7 @@ plt.close()
 # Delete values where button is pressed
 remove_list_two = []
 for i in range(len(servo_position)):
-	if button_position[i] < 0.4:
+	if button_position[i] > 0.4:
 		remove_list_two.append(i)
 camera_image = np.delete(camera_image, remove_list_two)
 servo_position = np.delete(servo_position, remove_list_two)
@@ -400,15 +400,15 @@ lengthofdatatwo = int(len(throttle_position_flipped))
 imagecounterone = []
 imagecountertwo = []
 for a in range(int(lengthofdata)):
-	imagecounterone.append(a+1+45142)
+	imagecounterone.append(a+1+78097)
 for b in range(int(lengthofdatatwo)):
-	imagecountertwo.append(len(imagecounterone)+b+1+45142)
+	imagecountertwo.append(len(imagecounterone)+b+1+78097)
 
 with open('training_dataset_overtaking.csv', 'w+') as csvfiletrain:
 	fieldnames = ['steering', 'throttle', 'image_number', 'button_position']
 	writer = csv.DictWriter(csvfiletrain, fieldnames=fieldnames)
 	writer.writeheader()
-	imgcount = 45143
+	imgcount = 78098
 	for a in range(int(lengthofdata)):
 		writer.writerow({'steering': servo_position[a], 'throttle': throttle_position[a], 'image_number': imagecounterone[a], 'button_position': button_position[a]})
 		path = "/home/jesse/Desktop/imagefiles/image_set"
@@ -430,7 +430,7 @@ with open('training_dataset_overtaking.csv', 'w+') as csvfiletrain:
 		  	if camera_image_flipped[a][47:68] == mylist[d]:
 				print("Converting..." + str(lengthofdata+a+1) + ' out of ' + str(lengthofdatatwo*2))
 				im = cv2.imread(str(camera_image_flipped[a][:68]))
-				horizontal_im = cv2.flip(im, 0)	
+				horizontal_im = cv2.flip(im, 1)	
 				cv2.imwrite(path + '/' + str(imgcount) + '.png', horizontal_im)		
 				imgcount = imgcount + 1;
 		

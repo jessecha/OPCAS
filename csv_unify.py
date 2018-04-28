@@ -432,7 +432,7 @@ with open('training_dataset.csv', 'w+') as csvfiletrain:
 		  	if camera_image_flipped[a][37:58] == mylist[d]:
 				print("Converting..." + str(lengthofdata+a+1) + ' out of ' + str(lengthofdatatwo*2))
 				im = cv2.imread(str(camera_image_flipped[a][:58]))
-				horizontal_im = cv2.flip(im, 0)	
+				horizontal_im = cv2.flip(im, 1)	
 				cv2.imwrite(path + '/' + str(imgcount) + '.png', horizontal_im)		
 				imgcount = imgcount + 1;
 		

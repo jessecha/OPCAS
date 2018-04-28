@@ -23,12 +23,12 @@ config = tf.ConfigProto(allow_soft_placement=True, device_count = {'CPU' : 1, 'G
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
-model = build_2d_cnn(w=157, h=157, d=3)
+model = build_2d_cnn(w=160, h=160, d=3)
 model.load_weights('2DCNN.hdf5')
 
-img_in = Input(shape=(157, 157, 3), name='img_in')
-h = 104
-w = 104
+img_in = Input(shape=(160, 160, 3), name='img_in')
+h = 160
+w = 160
 d = 3
 x = img_in
 x = Convolution2D(24, (5,5), strides=(2,2), activation='elu', name='conv1', input_shape=(h, w, d))(x)
@@ -104,10 +104,15 @@ beta = 1.0 - alpha
 counter = 0
 img_stack = []
 z = []
-for path in sorted(iglob('/home/jesse/Desktop/imagefiles/image_set/*.png'), key=os.path.getmtime):
-    img = cv2.imread(path)
+number = 69800
+path, dirs, files = os.walk('/home/jesse/Desktop/imagefiles/image_set/').next()
+length = len(files)
+quarterlength = length
+for a in range(quarterlength):	
+    img = cv2.imread('/home/jesse/Desktop/imagefiles/image_set/'+ str(number) + '.png')	
+    number = number + 1	
     img = img[210:500, 70:570]
-    img = cv2.resize(img, (157, 157), interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, (160, 160), interpolation=cv2.INTER_CUBIC)
     if counter == 1:
     	cv2.imshow(str(img.shape), img)
     	cv2.waitKey(1000)

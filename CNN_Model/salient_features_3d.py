@@ -24,14 +24,14 @@ config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 
 global n_stacked
-n_stacked = 3
+n_stacked = 2
 
-model = build_3d_cnn(w=160, h=160, d=3, s=n_stacked)
-model.load_weights('3DCNN2.hdf5')
+model = build_3d_cnn(w=104, h=104, d=3, s=n_stacked)
+model.load_weights('3DCNN.hdf5')
 
-img_in = Input(shape=(n_stacked, 160, 160, 3), name='img_in')
-h = 160
-w = 160
+img_in = Input(shape=(n_stacked, 104, 104, 3), name='img_in')
+h = 104
+w = 104
 d = 3
 s = n_stacked
 x = img_in
@@ -114,7 +114,7 @@ layers_strides = {5: [1, 1, 1, 1, 1], 4: [1, 1, 1, 1, 1], 3: [1, 1, 2, 2, 1], 2:
 
 def compute_visualisation_mask(img):
     activations = functor([np.array([img])])	
-    upscaled_activation = np.ones((3,20,20))
+    upscaled_activation = np.ones((2,13,13))
     for layer in [5, 4, 3, 2, 1]:
 	the_layers = np.mean(activations[layer], axis=4).squeeze(axis=0)
 	averaged_activation = the_layers * upscaled_activation
@@ -124,23 +124,23 @@ def compute_visualisation_mask(img):
 	modeltwo = Sequential()
 	if layer == 5:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(3,3,3), strides=(1,1,1),
-		input_shape=(3, 20, 20, 1), data_format='channels_last',
+		input_shape=(2, 13, 13, 1), data_format='channels_last',
                 padding='same'))
 	if layer == 4:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(3,3,3), strides=(1,1,1),
-		input_shape=(3, 20, 20, 1), data_format='channels_last',
+		input_shape=(2, 13, 13, 1), data_format='channels_last',
                 padding='same'))
 	if layer == 3:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(5,5,5), strides=(1,2,2),
-		input_shape=(3, 20, 20, 1), data_format='channels_last',
+		input_shape=(2, 13, 13, 1), data_format='channels_last',
                 padding='same'))
 	if layer == 2:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(5,5,5), strides=(1,2,2),
-		input_shape=(3, 40, 40, 1), data_format='channels_last',
+		input_shape=(2, 26, 26, 1), data_format='channels_last',
                 padding='same'))
 	if layer == 1:
 		modeltwo.add(Conv3DTranspose(filters=1, kernel_size=(5,5,5), strides=(1,2,2),
-		input_shape=(3, 80, 80, 1), data_format='channels_last',
+		input_shape=(2, 52, 52, 1), data_format='channels_last',
                 padding='same'))
         result = modeltwo.predict(x)
 	result = result.squeeze(axis=0)
@@ -167,8 +167,8 @@ beta = 1.0 - alpha
 counter = 0
 img_stack = []
 z = []
-number = 1
-numbertwo = 1
+number = 69800
+numbertwo = 69800
 target_image = []
 path, dirs, files = os.walk('/home/jesse/Desktop/imagefiles/image_set/').next()
 length = len(files)
@@ -178,7 +178,7 @@ for a in range(quarterlength):
 	for b in range(n_stacked):	
 	    img = cv2.imread('/home/jesse/Desktop/imagefiles/image_set/'+ str(number) + '.png')	
             img = img[210:500, 70:570]
-	    img = cv2.resize(img, (160, 160), interpolation=cv2.INTER_CUBIC)
+	    img = cv2.resize(img, (104, 104), interpolation=cv2.INTER_CUBIC)
 	    img_stack.append(img.astype(np.float32))
 	    display_img_stack.append(img.astype(np.float32))
 	    number = number + 1	
@@ -197,20 +197,20 @@ for a in range(quarterlength):
     		temp_img = cv2.imread('/home/jesse/Desktop/imagefiles/image_set/'+ str(numbertwo) + '.png')	
 		numbertwo = numbertwo + 1
 	        temp_img = temp_img[210:500, 70:570]
-	        temp_img = cv2.resize(temp_img, (160, 160), interpolation=cv2.INTER_AREA)
+	        temp_img = cv2.resize(temp_img, (104, 104), interpolation=cv2.INTER_AREA)
 		temp_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2RGB)
 		salient_masked_one = salient_mask[0,:,:]
 		salient_masked_two = salient_mask[1,:,:]
-		salient_masked_three = salient_mask[2,:,:]
+		#salient_masked_three = salient_mask[2,:,:]
 		salient_mask_stacked = np.dstack((salient_masked_one,salient_masked_two))
-		salient_mask_stacked = np.dstack((salient_mask_stacked,salient_masked_three))
+		salient_mask_stacked = np.dstack((salient_mask_stacked,salient_masked_two))
                 cv2.imshow(str(salient_mask_stacked.shape), salient_mask_stacked)
                 cv2.waitKey(100)
                 cv2.destroyAllWindows()
 		blend = cv2.addWeighted(temp_img.astype('float32'), alpha, salient_mask_stacked, beta, 0.0)			
 		imgs.append(blend)
 	print(counter)
-        if counter >= 1000:
+        if counter >= 70800:
        		break
 
 plot_movie_mp4(imgs)
