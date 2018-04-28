@@ -3,7 +3,8 @@ Welcome to the DNRacing Repo! This repository is for a scaled V2V autonomous mot
 
  # How-to-get-started <br />
 
-<**Hardware**> <br />
+<<**Hardware**>> <br />
+
 The complete list of materials used for the car is listed below. <br />
 **Computing Unit** <br />
     Nvidia Jetson TX2 Developer Board : The TX2 is futureproof, but the TX1 will also run the 3D_CNN architecture with 2 stacked images.    <br />
@@ -30,7 +31,7 @@ The complete list of materials used for the car is listed below. <br />
     Compufly V2 USB-to-PPM USB Cable : This converts the Logitech Steering Wheel commands into PPM signals for the Futaba transmitters to read. <br />
     VRC-3NT PWM-to-USB USB Cable : This converts the PWM signals from a standard RC receiver into signals readable by the ROS joy pkg. <br />
 
-<**Software**> <br />
+<<**Software**>> <br />
 
 First, make the ROS Catkin_PKG_Car package and solve any dependecy issues. The race_robot folder contains the launch file (sixthtest.launch) for data collection. To start collecting images while driving, type <br />
 roslaunch race_robot sixthtest.launch <br />
