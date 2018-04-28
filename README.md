@@ -1,4 +1,7 @@
  # DNRacing <br />
+
+![Alt Text](https://github.com/jessecha/DNRacing/blob/master/video.gif)
+
 Welcome to the DNRacing Repo! This repository is for a scaled V2V autonomous motorsport project involving two 1:8 scale RC cars. All of the work was done with ROS Kinetic and Keras. The project build is written below. <br />
 
  # How-to-get-started <br />
