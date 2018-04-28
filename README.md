@@ -4,28 +4,27 @@ Welcome to the DNRacing Repo! This repository is for a scaled V2V autonomous mot
  # How-to-get-started <br />
 
 <**Hardware**> <br />
-The complete list of materials used for the car is listed below. <br />
-
-    **Computing Unit** <br />
+The complete list of materials used for the car is listed below.
+**Computing Unit** <br />
     Nvidia Jetson TX2 Developer Board : The TX2 is futureproof, but the TX1 will also run the 3D_CNN architecture with 2 stacked images.    <br />
     Arduino Uno : Arudino Megas are also a good option.  <br />
-    **FPV RX/TX Interface** <br />
+**FPV RX/TX Interface** <br />
     Amimon Connex : I tried UDP wifi video streaming, but the latencies were too high. The wireless HDMI transmitter from Amimon Connex has no latency, but it is expensive. An analogy FPV TX/RX setup will also work for those who are on a budget. <br />
     Futaba RX/TX : The trainer port must have trainer/master mode capability for the PPM-to-USB (Compufly V2) cable to stream the signals back to the PC and receive commands from the steering wheel. <br />
-    **Sensors** <br />
+**Sensors** <br />
     Ximea XiQ CMOS Camera with 1.8mm fisheye lens : Fish eye lens are highly recommended for a wide field of view (FOV). I mounted the cameras really high with a long mobile phone stand because I wanted a larger FOV.  <br />
-    **Chassis** <br />
+**Chassis** <br />
     Vehicle #1: OFNA DM1-Spec E <br />
     Vehicle #2: Hong Nor X3-GT <br />
     *Note: The vehicles above were chosen because they were fast. However, other 1/10th scale RC cars with standard servos and ESCs will also work. <br />
-    **Drive Train**  <br />
+**Drive Train**  <br />
     Tekin RX-8 ver.2 Electronic Speed Controller : High end ESCs are recommended for quality low speed control with brushless motors. Sensored motors are also highly recommended.  <br />
     11T Steel Pinion Gear & 48T Steel Spur Gear : Both the spur gears and pinion gears should be steel because plastic ones tend to chip off after prolonged use.  <br />
     TrackStar 2650Kv Brushless Motor  <br />
-    **PowerSupply** <br />
+**PowerSupply** <br />
     GoalZero Sherpa 100 Battery Pack : Although it is possible to buy other alternative batteries, remember that they should at least carry a power output of 30W. <br />
     5000mAh 11.1v LiPo Battery Pack <br />
-    **Other** <br />
+**Other** <br />
     USB 3.0 7-port Expansion Hub <br />	
     Logitech G25/G27/G29 : The G25 is the best choice if you are on a budget. <br />
     Compufly V2 USB-to-PPM USB Cable : This converts the Logitech Steering Wheel commands into PPM signals for the Futaba transmitters to read. <br />
