@@ -45,5 +45,17 @@ git pull origin master
 
  python run_3d_cnn.py --n_stacked 2 --n_jump 1 --width 320 --height 240 --depth 3 --img_path /home/jesse/Desktop/imagefiles/no_crop_image_set --out_path /home/jesse/Desktop/training_set.csv --batch_size 32 train
 
+<Github Procedure>
+*First enter Github Folder
+cd Desktop/DNRacing
+*Change Files
+git add .    (or git add -U)
+*Remove files
+git rm -r FILENAME
+*Commit
+git commit -m "Describe whatever happened in the commit"
+git push origin master
+
+
 git reset HEAD~
 
