@@ -7,7 +7,6 @@ Welcome to the DNRacing Repo! This repository is for a scaled V2V autonomous mot
  # How-to-get-started <br />
 
 <<**Hardware**>> <br />
-Note: I am selling a big portion of my hardware; please let me know if you are interested in purchasing!
 **Computing Unit** <br />
     Nvidia Jetson TX2 Developer Board : The TX2 is futureproof, but the TX1 will also run the 3D_CNN architecture with 2 stacked images.    <br />
     Arduino Uno : Arudino Megas are also a good option.  <br />
